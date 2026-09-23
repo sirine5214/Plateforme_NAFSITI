@@ -1,0 +1,1538 @@
+/**======================================================================
+  Nafsiti — charte graphique
+  Vert principal #45735D · Vert gris #6D8C7E · Brume #D0D9D5
+  Menthe #AABFB3 · Gris clair #F2F2F2 · Police Poppins
+========================================================================= */
+
+$nf-ink: #1f2d27; // texte principal (vert très sombre, dérivé de la charte)
+$nf-green-dark: darken($nafsiti-green, 8%);
+$nf-border: #e1e8e4;
+$nf-danger: #b54848;
+$nf-danger-bg: #fbeeee;
+$nf-radius: 12px;
+
+// ---------- Variables Bootstrap (le CSS précompilé de Bootstrap est aussi chargé) ----------
+:root {
+  --bs-primary: #{$nafsiti-green};
+  --bs-primary-rgb: 69, 115, 93;
+  --bs-secondary: #{$nafsiti-sage};
+  --bs-secondary-rgb: 109, 140, 126;
+  --bs-link-color: #{$nafsiti-green};
+  --bs-link-color-rgb: 69, 115, 93;
+  --bs-link-hover-color: #{$nf-green-dark};
+  --bs-link-hover-color-rgb: 54, 91, 74;
+  --bs-focus-ring-color: rgba(69, 115, 93, 0.25);
+  --bs-primary-bg-subtle: #{$nafsiti-mist};
+  --bs-primary-text-emphasis: #{$nf-green-dark};
+}
+
+body {
+  font-family: $theme-font-family;
+  background: $nafsiti-light;
+}
+
+a {
+  color: $nafsiti-green;
+
+  &:hover {
+    color: $nf-green-dark;
+  }
+}
+
+.text-primary {
+  color: $nafsiti-green !important;
+}
+
+.bg-primary {
+  background-color: $nafsiti-green !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: $nafsiti-mint;
+  box-shadow: 0 0 0 0.2rem rgba(69, 115, 93, 0.18);
+}
+
+.form-check-input {
+  &:checked {
+    background-color: $nafsiti-green;
+    border-color: $nafsiti-green;
+  }
+
+  &:focus {
+    border-color: $nafsiti-mint;
+    box-shadow: 0 0 0 0.2rem rgba(69, 115, 93, 0.2);
+  }
+}
+
+.pagination {
+  --bs-pagination-color: #{$nafsiti-green};
+  --bs-pagination-hover-color: #{$nf-green-dark};
+  --bs-pagination-hover-bg: #{$nafsiti-light};
+  --bs-pagination-focus-color: #{$nf-green-dark};
+  --bs-pagination-focus-box-shadow: 0 0 0 0.2rem rgba(69, 115, 93, 0.2);
+  --bs-pagination-active-bg: #{$nafsiti-green};
+  --bs-pagination-active-border-color: #{$nafsiti-green};
+  margin-bottom: 0;
+}
+
+.btn-primary:disabled,
+.btn-primary.disabled {
+  background-color: $nafsiti-sage;
+  border-color: $nafsiti-sage;
+}
+
+.btn-light {
+  background: $nafsiti-light;
+  border-color: $nf-border;
+  color: $nf-ink;
+
+  &:hover {
+    background: $nafsiti-mist;
+    border-color: $nafsiti-mist;
+  }
+}
+
+.modal-content {
+  border: none;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+// ---------- Champs de formulaire communs ----------
+.nf-auth,
+.nf-page,
+.modal {
+  .form-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: $nf-ink;
+    margin-bottom: 6px;
+  }
+
+  .form-control,
+  .form-select {
+    min-height: 44px;
+    border: 1px solid $nafsiti-mist;
+    border-radius: 10px;
+    background-color: #fff;
+    color: $nf-ink;
+    font-size: 14px;
+
+    &::placeholder {
+      color: #9aaba3;
+    }
+
+    &.is-invalid {
+      border-color: $nf-danger;
+      background-image: none;
+    }
+  }
+}
+
+.nf-field {
+  margin-bottom: 16px;
+}
+
+.nf-error {
+  color: $nf-danger;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.nf-hint {
+  font-size: 12.5px;
+  color: $nafsiti-sage;
+  margin: -4px 0 16px;
+}
+
+.nf-input-icon {
+  position: relative;
+
+  > i {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: $nafsiti-sage;
+    pointer-events: none;
+    font-size: 15px;
+  }
+
+  > .form-control {
+    padding-left: 40px;
+  }
+}
+
+.nf-input-toggle {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: $nafsiti-sage;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+
+  &:hover {
+    color: $nafsiti-green;
+    background: $nafsiti-light;
+  }
+}
+
+.nf-alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  padding: 12px 14px;
+
+  > i {
+    font-size: 17px;
+    flex-shrink: 0;
+  }
+
+  .btn-close {
+    margin-left: auto;
+    font-size: 11px;
+  }
+
+  &.alert-success {
+    background: #e8f0ec;
+    border-color: #cfe0d7;
+    color: #2f5041;
+  }
+
+  &.alert-danger {
+    background: $nf-danger-bg;
+    border-color: #f1d0d0;
+    color: #8a3333;
+  }
+
+  &--floating {
+    position: fixed;
+    top: 76px;
+    right: 24px;
+    z-index: 1060;
+    max-width: 420px;
+    box-shadow: 0 10px 30px rgba(31, 45, 39, 0.15);
+  }
+}
+
+// =========================================================
+//  Authentification (connexion / inscription)
+// =========================================================
+.nf-auth {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  background: #fff;
+}
+
+.nf-auth-brand {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  padding: 48px;
+  background: linear-gradient(160deg, $nafsiti-light 0%, $nafsiti-mist 100%);
+
+  // formes décoratives douces
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    background: $nafsiti-mint;
+    opacity: 0.25;
+  }
+
+  &::before {
+    width: 420px;
+    height: 420px;
+    top: -160px;
+    left: -140px;
+  }
+
+  &::after {
+    width: 300px;
+    height: 300px;
+    bottom: -120px;
+    right: -90px;
+  }
+
+  &__logo {
+    position: relative;
+    width: 100%;
+    max-width: 320px;
+    height: auto;
+  }
+
+  &__points {
+    position: relative;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-width: 380px;
+    display: grid;
+    gap: 18px;
+
+    li {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    strong {
+      display: block;
+      color: $nf-ink;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    p {
+      margin: 2px 0 0;
+      color: $nafsiti-sage;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: $nafsiti-green;
+    color: #fff;
+    font-size: 17px;
+  }
+}
+
+.nf-auth-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+}
+
+.nf-auth-card {
+  width: 100%;
+  max-width: 420px;
+
+  &--wide {
+    max-width: 520px;
+  }
+
+  &__logo-mobile {
+    display: none;
+    height: 33px;
+    margin-bottom: 28px;
+  }
+
+  &__title {
+    font-size: 26px;
+    font-weight: 600;
+    color: $nf-ink;
+    margin-bottom: 6px;
+  }
+
+  &__subtitle {
+    color: $nafsiti-sage;
+    margin-bottom: 28px;
+  }
+
+  &__footer {
+    text-align: center;
+    color: $nafsiti-sage;
+    margin: 24px 0 0;
+
+    a {
+      font-weight: 600;
+    }
+  }
+}
+
+.nf-btn-block {
+  width: 100%;
+  min-height: 46px;
+  border-radius: 10px;
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+.nf-role-choice {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.nf-role-option {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1.5px solid $nafsiti-mist;
+  border-radius: $nf-radius;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  > i {
+    font-size: 18px;
+    color: $nafsiti-sage;
+    margin-top: 2px;
+  }
+
+  strong {
+    display: block;
+    font-size: 14px;
+    color: $nf-ink;
+  }
+
+  small {
+    display: block;
+    font-size: 12px;
+    color: $nafsiti-sage;
+    line-height: 1.4;
+  }
+
+  &:hover {
+    border-color: $nafsiti-mint;
+  }
+
+  &.is-selected {
+    border-color: $nafsiti-green;
+    background: rgba(69, 115, 93, 0.06);
+
+    > i {
+      color: $nafsiti-green;
+    }
+  }
+
+  &:has(input:focus-visible) {
+    box-shadow: 0 0 0 3px rgba(69, 115, 93, 0.25);
+  }
+}
+
+fieldset.nf-field {
+  border: 0;
+  padding: 0;
+  min-width: 0;
+
+  legend {
+    float: none;
+    width: auto;
+  }
+}
+
+.nf-password-rules {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  padding: 0;
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: #9aaba3;
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+
+    i {
+      font-size: 12px;
+      opacity: 0.4;
+    }
+
+    &.ok {
+      color: $nafsiti-green;
+
+      i {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+@media (max-width: 991.98px) {
+  .nf-auth {
+    grid-template-columns: 1fr;
+    background: $nafsiti-light;
+  }
+
+  .nf-auth-brand {
+    display: none;
+  }
+
+  .nf-auth-panel {
+    padding: 32px 16px;
+  }
+
+  .nf-auth-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 28px 22px;
+    box-shadow: 0 4px 24px rgba(31, 45, 39, 0.08);
+
+    &__logo-mobile {
+      display: block;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .nf-role-choice {
+    grid-template-columns: 1fr;
+  }
+}
+
+// =========================================================
+//  Pages internes (gestion des utilisateurs, profil)
+// =========================================================
+.nf-page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.nf-page-title {
+  font-weight: 600;
+  color: $nf-ink;
+  margin-bottom: 4px;
+}
+
+.nf-page-subtitle {
+  color: $nafsiti-sage;
+  margin: 0;
+}
+
+.nf-card {
+  border: 1px solid $nf-border;
+  border-radius: 14px;
+  box-shadow: 0 1px 3px rgba(31, 45, 39, 0.05);
+  overflow: hidden;
+  margin-bottom: 0;
+
+  &:hover {
+    box-shadow: 0 1px 3px rgba(31, 45, 39, 0.05);
+  }
+
+  &__header {
+    padding: 16px 20px;
+    border-bottom: 1px solid $nf-border;
+
+    h5 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 600;
+      color: $nf-ink;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      i {
+        color: $nafsiti-green;
+      }
+    }
+  }
+
+  &__body {
+    padding: 20px;
+  }
+}
+
+.nf-stat {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 100%;
+  padding: 18px;
+  background: #fff;
+  border: 1px solid $nf-border;
+  border-radius: 14px;
+
+  &__icon {
+    flex-shrink: 0;
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+    background: $nafsiti-green;
+    color: #fff;
+
+    &--sage {
+      background: $nafsiti-sage;
+    }
+
+    &--mint {
+      background: $nafsiti-mint;
+      color: $nf-ink;
+    }
+
+    &--muted {
+      background: $nafsiti-mist;
+      color: $nafsiti-green;
+    }
+  }
+
+  &__value {
+    font-size: 24px;
+    font-weight: 600;
+    color: $nf-ink;
+    line-height: 1.1;
+  }
+
+  &__label {
+    font-size: 12.5px;
+    color: $nafsiti-sage;
+  }
+}
+
+.nf-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px;
+  border-bottom: 1px solid $nf-border;
+
+  &__search {
+    flex: 1 1 260px;
+  }
+
+  .form-select {
+    flex: 0 1 190px;
+  }
+
+  .btn {
+    min-height: 44px;
+    border-radius: 10px;
+  }
+}
+
+.nf-table {
+  thead th {
+    background: $nafsiti-light;
+    color: $nafsiti-sage;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border-bottom: 1px solid $nf-border;
+    padding: 12px 16px;
+    white-space: nowrap;
+  }
+
+  tbody td {
+    vertical-align: middle;
+    padding: 14px 16px;
+    border-color: $nf-border;
+  }
+
+  tbody tr:hover td {
+    background: rgba(208, 217, 213, 0.18);
+  }
+
+  tr.is-inactive .nf-user-cell,
+  tr.is-inactive .nf-badge {
+    opacity: 0.55;
+  }
+
+  &__empty {
+    text-align: center;
+    padding: 40px 16px !important;
+    color: $nafsiti-sage;
+
+    > i {
+      font-size: 28px;
+      color: $nafsiti-mint;
+    }
+  }
+}
+
+.nf-table-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-top: 1px solid $nf-border;
+  font-size: 13px;
+}
+
+.nf-user-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  &__name {
+    font-weight: 600;
+    color: $nf-ink;
+  }
+
+  &__email {
+    font-size: 12.5px;
+    color: $nafsiti-sage;
+  }
+}
+
+.nf-you {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 7px;
+  border-radius: 20px;
+  background: $nafsiti-light;
+  border: 1px solid $nafsiti-mist;
+  font-size: 11px;
+  font-weight: 500;
+  color: $nafsiti-sage;
+  vertical-align: middle;
+}
+
+.nf-avatar {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  background: $nafsiti-mist;
+  color: $nafsiti-green;
+
+  &--therapeute {
+    background: $nafsiti-mint;
+    color: $nf-ink;
+  }
+
+  &--administrateur {
+    background: $nafsiti-green;
+    color: #fff;
+  }
+
+  &--sm {
+    width: 34px;
+    height: 34px;
+    font-size: 12px;
+  }
+
+  &--lg {
+    width: 88px;
+    height: 88px;
+    font-size: 28px;
+    background: $nafsiti-green;
+    color: #fff;
+    margin: 0 auto 16px;
+  }
+}
+
+.nf-badge {
+  display: inline-block;
+  padding: 4px 11px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  background: #eef2f0;
+  color: $nafsiti-green;
+
+  &--therapeute {
+    background: rgba(170, 191, 179, 0.4);
+    color: #2f5041;
+  }
+
+  &--administrateur {
+    background: $nafsiti-green;
+    color: #fff;
+  }
+}
+
+.nf-switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+
+  .form-check-input {
+    width: 2.4em;
+    height: 1.3em;
+    margin-top: 0;
+    cursor: pointer;
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+
+  .form-check-label {
+    font-size: 13px;
+    color: $nf-ink;
+  }
+}
+
+.nf-icon-btn {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 8px;
+  color: $nafsiti-sage;
+  background: transparent;
+  border: none;
+
+  &:hover:not(:disabled) {
+    background: $nafsiti-light;
+    color: $nafsiti-green;
+  }
+
+  &--danger:hover:not(:disabled) {
+    background: $nf-danger-bg;
+    color: $nf-danger;
+  }
+}
+
+.nf-modal-header {
+  background: $nafsiti-light;
+  border-bottom: 1px solid $nf-border;
+
+  .modal-title {
+    color: $nafsiti-green;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+.nf-confirm {
+  padding: 28px 24px;
+
+  &__icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: $nf-danger-bg;
+    color: $nf-danger;
+    font-size: 22px;
+    margin-bottom: 14px;
+  }
+
+  h5 {
+    color: $nf-ink;
+    font-weight: 600;
+  }
+}
+
+.nf-profile-card {
+  text-align: center;
+  padding: 32px 24px;
+
+  &__meta {
+    list-style: none;
+    text-align: left;
+    padding: 18px 0 0;
+    margin: 22px 0 0;
+    border-top: 1px solid $nf-border;
+    display: grid;
+    gap: 10px;
+    font-size: 13px;
+    color: $nafsiti-sage;
+
+    i {
+      color: $nafsiti-green;
+      margin-right: 8px;
+    }
+  }
+}
+
+// ---------- En-tête & menu ----------
+.nf-header-user {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 8px;
+
+  .nf-avatar {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+  }
+
+  &__name {
+    color: #fff;
+    font-weight: 500;
+  }
+}
+
+.nf-pro-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-right: 48px !important;
+
+  .nf-avatar {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.3;
+
+    small {
+      opacity: 0.8;
+    }
+  }
+}
+
+.nf-help-card {
+  background: $nafsiti-light;
+  border: 1px solid $nf-border;
+
+  &__icon {
+    height: 44px;
+    width: auto;
+  }
+}
+
+// ---------- Rendez-vous ----------
+.nf-segmented {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px;
+  background: $nafsiti-light;
+  border: 1px solid $nf-border;
+  border-radius: 12px;
+
+  &__item {
+    border: 0;
+    background: transparent;
+    padding: 8px 14px;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 500;
+    color: $nafsiti-sage;
+    transition: background 0.15s, color 0.15s;
+
+    &:hover {
+      color: $nafsiti-green;
+    }
+
+    &.is-active {
+      background: #fff;
+      color: $nafsiti-green;
+      box-shadow: 0 1px 2px rgba(31, 45, 39, 0.08);
+    }
+  }
+}
+
+.nf-statut {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 11px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+
+  &::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  &--en_attente {
+    background: #fbf3e4;
+    color: #8a6116;
+  }
+
+  &--confirme {
+    background: rgba(69, 115, 93, 0.12);
+    color: $nafsiti-green;
+  }
+
+  &--annule {
+    background: $nf-danger-bg;
+    color: $nf-danger;
+  }
+
+  &--libre {
+    background: rgba(170, 191, 179, 0.35);
+    color: #2f5041;
+  }
+}
+
+.nf-table tr.is-inactive .nf-date-cell {
+  opacity: 0.55;
+}
+
+.nf-date-cell {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.35;
+
+  &__day {
+    font-weight: 600;
+    color: $nf-ink;
+
+    &::first-letter {
+      text-transform: uppercase;
+    }
+  }
+
+  &__time {
+    font-size: 12.5px;
+    color: $nafsiti-sage;
+  }
+}
+
+.nf-motif {
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: $nafsiti-sage;
+}
+
+.nf-step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: $nafsiti-green;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.nf-pick-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nf-pick {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px;
+  text-align: left;
+  background: #fff;
+  border: 1px solid $nf-border;
+  border-radius: 12px;
+  transition: border-color 0.15s, background 0.15s;
+
+  &:hover {
+    border-color: $nafsiti-mint;
+  }
+
+  &.is-active {
+    border-color: $nafsiti-green;
+    background: rgba(69, 115, 93, 0.06);
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &__name {
+    font-weight: 600;
+    color: $nf-ink;
+  }
+
+  &__meta {
+    font-size: 12.5px;
+    color: $nafsiti-sage;
+  }
+
+  &__chevron {
+    margin-left: auto;
+    color: $nafsiti-mint;
+  }
+}
+
+.nf-placeholder {
+  text-align: center;
+  padding: 36px 16px;
+  color: $nafsiti-sage;
+
+  > i {
+    display: block;
+    font-size: 28px;
+    color: $nafsiti-mint;
+    margin-bottom: 8px;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.nf-day {
+  & + & {
+    margin-top: 18px;
+  }
+
+  &__title {
+    font-size: 13px;
+    font-weight: 600;
+    color: $nf-ink;
+    margin-bottom: 8px;
+
+    &::first-letter {
+      text-transform: uppercase;
+    }
+  }
+}
+
+.nf-slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.nf-slot {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1px solid $nafsiti-mist;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  color: $nafsiti-green;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+
+  small {
+    font-weight: 400;
+    color: $nafsiti-sage;
+  }
+
+  &:hover:not(.nf-slot--static) {
+    border-color: $nafsiti-green;
+  }
+
+  &.is-active {
+    background: $nafsiti-green;
+    border-color: $nafsiti-green;
+    color: #fff;
+
+    small {
+      color: rgba(255, 255, 255, 0.8);
+    }
+  }
+
+  &--static {
+    cursor: default;
+    padding-right: 8px;
+  }
+
+  &.is-reserved {
+    background: #fbf3e4;
+    border-color: #f1dfbd;
+    color: #8a6116;
+  }
+
+  &__tag {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 1px 7px;
+    border-radius: 20px;
+    background: rgba(138, 97, 22, 0.12);
+  }
+
+  &__remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: $nafsiti-sage;
+
+    &:hover:not(:disabled) {
+      background: $nf-danger-bg;
+      color: $nf-danger;
+    }
+  }
+}
+
+.nf-booking {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid $nf-border;
+
+  &__summary {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    border-radius: 12px;
+    background: rgba(69, 115, 93, 0.07);
+
+    > i {
+      font-size: 20px;
+      color: $nafsiti-green;
+      margin-top: 2px;
+    }
+
+    strong {
+      color: $nf-ink;
+    }
+  }
+}
+
+// ---------- Tableau de bord ----------
+.nf-stat__icon--amber {
+  background: #fbf3e4;
+  color: #8a6116;
+}
+
+.nf-stat__value--sm {
+  font-size: 17px;
+  line-height: 1.3;
+}
+
+.nf-link {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.nf-hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 24px;
+  padding: 32px 36px;
+  border-radius: 18px;
+  overflow: hidden;
+  color: #fff;
+  background: linear-gradient(120deg, $nafsiti-green 0%, $nafsiti-sage 100%);
+
+  &__text {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    min-width: 0;
+
+    h3 {
+      color: #fff;
+      font-weight: 600;
+      margin: 6px 0 8px;
+    }
+
+    p {
+      margin: 0;
+      max-width: 520px;
+      opacity: 0.9;
+    }
+  }
+
+  &__date {
+    display: inline-block;
+    font-size: 12.5px;
+    opacity: 0.85;
+
+    &::first-letter {
+      text-transform: uppercase;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+
+    .btn {
+      border-radius: 10px;
+      font-weight: 500;
+    }
+
+    .btn-light {
+      color: $nafsiti-green;
+    }
+  }
+
+  &__art {
+    position: relative;
+    flex-shrink: 0;
+    width: 170px;
+    height: 170px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      position: relative;
+      width: 88px;
+      filter: brightness(0) invert(1);
+      opacity: 0.95;
+    }
+  }
+
+  &__ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+
+    &--1 {
+      inset: 0;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    &--2 {
+      inset: 22px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    &--3 {
+      inset: 44px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+}
+
+.nf-btn-ghost {
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  background: transparent;
+
+  &:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.12);
+  }
+}
+
+.nf-agenda {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 0;
+
+    & + & {
+      border-top: 1px solid $nf-border;
+    }
+  }
+
+  &__date {
+    flex-shrink: 0;
+    width: 50px;
+    padding: 6px 0;
+    border-radius: 10px;
+    text-align: center;
+    background: rgba(69, 115, 93, 0.08);
+    color: $nafsiti-green;
+    line-height: 1.1;
+
+    span {
+      display: block;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    small {
+      font-size: 11px;
+      text-transform: uppercase;
+    }
+  }
+
+  &__time {
+    flex-shrink: 0;
+    width: 56px;
+    font-weight: 600;
+    color: $nafsiti-green;
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__title {
+    font-weight: 600;
+    color: $nf-ink;
+  }
+
+  &__meta {
+    font-size: 12.5px;
+    color: $nafsiti-sage;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &::first-letter {
+      text-transform: uppercase;
+    }
+  }
+}
+
+.nf-tips {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 16px;
+}
+
+.nf-tip {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid $nf-border;
+  border-radius: 14px;
+
+  &__icon {
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(170, 191, 179, 0.35);
+    color: $nafsiti-green;
+  }
+
+  strong {
+    display: block;
+    font-size: 13.5px;
+    color: $nf-ink;
+    margin-bottom: 2px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 12.5px;
+    color: $nafsiti-sage;
+  }
+}
+
+.nf-breath {
+  position: relative;
+  width: 170px;
+  height: 170px;
+  margin: 4px auto 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &__circle {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(170, 191, 179, 0.55) 0%, rgba(69, 115, 93, 0.35) 100%);
+    transform: scale(0.6);
+    transition: transform 5s ease-in-out;
+  }
+
+  &.is-running &__circle {
+    transform: scale(1);
+  }
+
+  &.is-running.is-out &__circle {
+    transform: scale(0.6);
+  }
+
+  &__label {
+    position: relative;
+    font-weight: 600;
+    color: $nafsiti-green;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nf-breath__circle {
+    transition: none;
+  }
+}
+
+.nf-help {
+  display: flex;
+  gap: 12px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: #fbf3e4;
+  border: 1px solid #f1dfbd;
+  color: #6f4e12;
+
+  > i {
+    font-size: 20px;
+    margin-top: 2px;
+  }
+
+  strong {
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 13px;
+  }
+
+  a {
+    color: #6f4e12;
+    font-weight: 600;
+    text-decoration: underline;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .nf-hero {
+    padding: 24px 20px;
+
+    &__art {
+      display: none;
+    }
+  }
+}

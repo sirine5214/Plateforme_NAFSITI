@@ -1,0 +1,414 @@
+<div class="nf-page nf-dash">
+  <!-- Accueil -->
+  <section class="nf-hero">
+    <div class="nf-hero__text">
+      <span class="nf-hero__date">{{ maintenant | date: 'EEEE d MMMM yyyy' }}</span>
+      <h3>{{ salutation() }}, {{ utilisateur()?.prenom }}</h3>
+      <p>{{ accroche() }}</p>
+      <div class="nf-hero__actions">
+        @switch (role()) {
+          @case ('PATIENT') {
+            <a routerLink="/rendez-vous/prendre" class="btn btn-light"><i class="feather icon-calendar me-1"></i> Prendre un rendez-vous</a>
+            <a routerLink="/rendez-vous" class="btn nf-btn-ghost">Mes rendez-vous</a>
+          }
+          @case ('THERAPEUTE') {
+            <a routerLink="/disponibilites" class="btn btn-light"><i class="feather icon-clock me-1"></i> Ajouter des disponibilités</a>
+            <a routerLink="/rendez-vous" class="btn nf-btn-ghost">Mes rendez-vous</a>
+          }
+          @default {
+            <a routerLink="/utilisateurs" class="btn btn-light"><i class="feather icon-users me-1"></i> Gérer les utilisateurs</a>
+            <a routerLink="/rendez-vous" class="btn nf-btn-ghost">Tous les rendez-vous</a>
+          }
+        }
+      </div>
+    </div>
+    <div class="nf-hero__art" aria-hidden="true">
+      <span class="nf-hero__ring nf-hero__ring--1"></span>
+      <span class="nf-hero__ring nf-hero__ring--2"></span>
+      <span class="nf-hero__ring nf-hero__ring--3"></span>
+      <img src="assets/images/nafsiti-icon.png" alt="" />
+    </div>
+  </section>
+
+  @if (erreur()) {
+    <div class="alert alert-danger nf-alert mb-4" role="alert">
+      <i class="feather icon-alert-circle"></i>
+      <span>{{ erreur() }}</span>
+      <button type="button" class="btn btn-sm btn-outline-danger ms-auto" (click)="charger()">Réessayer</button>
+    </div>
+  }
+
+  <!-- Indicateurs -->
+  <div class="row g-3 mb-4">
+    @switch (role()) {
+      @case ('PATIENT') {
+        <div class="col-6 col-xl-3">
+          <div class="nf-stat">
+            <span class="nf-stat__icon"><i class="feather icon-calendar"></i></span>
+            <div>
+              <div class="nf-stat__value nf-stat__value--sm">{{ prochain() ? (prochain()!.dateHeure | date: 'd MMM, HH:mm') : '—' }}</div>
+              <div class="nf-stat__label">Prochaine séance</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-xl-3">
+          <div class="nf-stat">
+            <span class="nf-stat__icon nf-stat__icon--mint"><i class="feather icon-check-circle"></i></span>
+            <div>
+              <div class="nf-stat__value">{{ confirmesAVenir().length }}</div>
+              <div class="nf-stat__label">Séances confirmées</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-xl-3">
+          <div class="nf-stat">
+            <span class="nf-stat__icon nf-stat__icon--amber"><i class="feather icon-clock"></i></span>
+            <div>
+              <div class="nf-stat__value">{{ enAttente().length }}</div>
+              <div class="nf-stat__label">En attente de confirmation</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-xl-3">
+          <div class="nf-stat">
+            <span class="nf-stat__icon nf-stat__icon--sage"><i class="feather icon-heart"></i></span>
+            <div>
+              <div class="nf-stat__value">{{ seancesPassees() }}</div>
+              <div class="nf-stat__label">Séances réalisées</div>
+            </div>
+          </div>
+        </div>
+      }
+      @case ('THERAPEUTE') {
+        <div class="col-6 col-xl-3">
+          <div class="nf-stat">
+            <span class="nf-stat__icon"><i class="feather icon-sun"></i></span>
+            <div>
+              <div class="nf-stat__value">{{ aujourdhui().length }}</div>
+              <div class="nf-stat__label">Séances aujourd'hui</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-xl-3">
+          <div class="nf-stat">
+            <span class="nf-stat__icon nf-stat__icon--amber"><i class="feather icon-bell"></i></span>
+            <div>
+              <div class="nf-stat__value">{{ enAttente().length }}</div>
+              <div class="nf-stat__label">Demandes à confirmer</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-xl-3">
+          <div class="nf-stat">
+            <span class="nf-stat__icon nf-stat__icon--mint"><i class="feather icon-check-circle"></i></span>
+            <div>
+              <div class="nf-stat__value">{{ confirmesAVenir().length }}</div>
+              <div class="nf-stat__label">Séances confirmées à venir</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-xl-3">
+          <div class="nf-stat">
+            <span class="nf-stat__icon nf-stat__icon--sage"><i class="feather icon-clock"></i></span>
+            <div>
+              <div class="nf-stat__value">{{ creneauxLibres() }}</div>
+              <div class="nf-stat__label">Créneaux libres</div>
+            </div>
+          </div>
+        </div>
+      }
+      @default {
+        <div class="col-6 col-xl-3">
+          <div class="nf-stat">
+            <span class="nf-stat__icon"><i class="feather icon-user"></i></span>
+            <div>
+              <div class="nf-stat__value">{{ statsUtilisateurs()?.patients ?? '—' }}</div>
+              <div class="nf-stat__label">Patients</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-xl-3">
+          <div class="nf-stat">
+            <span class="nf-stat__icon nf-stat__icon--mint"><i class="feather icon-award"></i></span>
+            <div>
+              <div class="nf-stat__value">{{ statsUtilisateurs()?.therapeutes ?? '—' }}</div>
+              <div class="nf-stat__label">Thérapeutes</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-xl-3">
+          <div class="nf-stat">
+            <span class="nf-stat__icon nf-stat__icon--sage"><i class="feather icon-calendar"></i></span>
+            <div>
+              <div class="nf-stat__value">{{ aVenir().length }}</div>
+              <div class="nf-stat__label">Rendez-vous à venir</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-xl-3">
+          <div class="nf-stat">
+            <span class="nf-stat__icon nf-stat__icon--amber"><i class="feather icon-clock"></i></span>
+            <div>
+              <div class="nf-stat__value">{{ enAttente().length }}</div>
+              <div class="nf-stat__label">En attente de confirmation</div>
+            </div>
+          </div>
+        </div>
+      }
+    }
+  </div>
+
+  <div class="row g-4">
+    @switch (role()) {
+      <!-- ========== PATIENT ========== -->
+      @case ('PATIENT') {
+        <div class="col-xl-8">
+          <div class="card nf-card mb-4">
+            <div class="nf-card__header d-flex align-items-center">
+              <h5><i class="feather icon-calendar"></i> Mes prochaines séances</h5>
+              <a routerLink="/rendez-vous" class="ms-auto nf-link">Tout voir</a>
+            </div>
+            <div class="nf-card__body">
+              @if (chargement()) {
+                <div class="text-muted"><span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Chargement…</div>
+              } @else {
+                <ul class="nf-agenda">
+                  @for (r of aVenir().slice(0, 4); track r.id) {
+                    <li class="nf-agenda__item">
+                      <div class="nf-agenda__date">
+                        <span>{{ r.dateHeure | date: 'd' }}</span>
+                        <small>{{ r.dateHeure | date: 'MMM' }}</small>
+                      </div>
+                      <div class="nf-agenda__body">
+                        <div class="nf-agenda__title">{{ r.therapeute.prenom }} {{ r.therapeute.nom }}</div>
+                        <div class="nf-agenda__meta">
+                          {{ r.dateHeure | date: 'EEEE' }} · {{ r.dateHeure | date: 'HH:mm' }} – {{ r.dateFin | date: 'HH:mm' }}
+                        </div>
+                      </div>
+                      <span class="nf-statut nf-statut--{{ r.statut | lowercase }}">{{ statutLabels[r.statut] }}</span>
+                    </li>
+                  } @empty {
+                    <li class="nf-placeholder">
+                      <i class="feather icon-calendar"></i>
+                      <p>Aucune séance prévue.</p>
+                      <a routerLink="/rendez-vous/prendre" class="btn btn-primary btn-sm mt-3">Prendre un rendez-vous</a>
+                    </li>
+                  }
+                </ul>
+              }
+            </div>
+          </div>
+
+          <div class="nf-tips">
+            <div class="nf-tip">
+              <span class="nf-tip__icon"><i class="feather icon-moon"></i></span>
+              <div>
+                <strong>Un sommeil régulier</strong>
+                <p>Se coucher et se lever à heures fixes aide à stabiliser l'humeur.</p>
+              </div>
+            </div>
+            <div class="nf-tip">
+              <span class="nf-tip__icon"><i class="feather icon-sun"></i></span>
+              <div>
+                <strong>Bouger un peu chaque jour</strong>
+                <p>Vingt minutes de marche suffisent à réduire le stress.</p>
+              </div>
+            </div>
+            <div class="nf-tip">
+              <span class="nf-tip__icon"><i class="feather icon-message-circle"></i></span>
+              <div>
+                <strong>En parler</strong>
+                <p>Partager ce que l'on ressent avec un proche ou un thérapeute allège le poids.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-4">
+          <!-- Respiration -->
+          <div class="card nf-card mb-4">
+            <div class="nf-card__header">
+              <h5><i class="feather icon-wind"></i> Pause respiration</h5>
+            </div>
+            <div class="nf-card__body text-center">
+              <div class="nf-breath" [class.is-running]="respirationActive()" [class.is-out]="respirationActive() && phase() === 'expire'">
+                <span class="nf-breath__circle"></span>
+                <span class="nf-breath__label" aria-live="polite">
+                  @if (respirationActive()) {
+                    {{ phase() === 'inspire' ? 'Inspirez…' : 'Expirez…' }}
+                  } @else {
+                    Prêt·e ?
+                  }
+                </span>
+              </div>
+              <p class="nf-hint mb-3">
+                Cohérence cardiaque : 5 s d'inspiration, 5 s d'expiration.
+                @if (cycles() > 0) {
+                  <br />{{ cycles() }} cycle{{ cycles() > 1 ? 's' : '' }} réalisé{{ cycles() > 1 ? 's' : '' }}
+                }
+              </p>
+              <button type="button" class="btn w-100" [class.btn-primary]="!respirationActive()" [class.btn-light]="respirationActive()"
+                (click)="basculerRespiration()">
+                <i class="feather me-1" [class.icon-play]="!respirationActive()" [class.icon-pause]="respirationActive()"></i>
+                {{ respirationActive() ? 'Arrêter' : 'Commencer' }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Urgence -->
+          <div class="nf-help">
+            <i class="feather icon-life-buoy"></i>
+            <div>
+              <strong>Besoin d'aide immédiate ?</strong>
+              <p>En cas de détresse ou de danger, appelez le SAMU au <a href="tel:190">190</a> ou rendez-vous aux urgences les plus proches.</p>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- ========== THÉRAPEUTE ========== -->
+      @case ('THERAPEUTE') {
+        <div class="col-xl-7">
+          <div class="card nf-card">
+            <div class="nf-card__header d-flex align-items-center">
+              <h5><i class="feather icon-bell"></i> Demandes à confirmer</h5>
+              <a routerLink="/rendez-vous" class="ms-auto nf-link">Tout voir</a>
+            </div>
+            <div class="nf-card__body">
+              @if (chargement()) {
+                <div class="text-muted"><span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Chargement…</div>
+              } @else {
+                <ul class="nf-agenda">
+                  @for (r of enAttente().slice(0, 5); track r.id) {
+                    <li class="nf-agenda__item">
+                      <span class="nf-avatar nf-avatar--sm">{{ initiales(r.patient) }}</span>
+                      <div class="nf-agenda__body">
+                        <div class="nf-agenda__title">{{ r.patient.prenom }} {{ r.patient.nom }}</div>
+                        <div class="nf-agenda__meta">{{ r.dateHeure | date: "EEE d MMM 'à' HH:mm" }}{{ r.motif ? ' · ' + r.motif : '' }}</div>
+                      </div>
+                      <button type="button" class="btn btn-sm btn-primary" [disabled]="enCours() === r.id" (click)="confirmer(r)">
+                        <i class="feather icon-check me-1"></i>Confirmer
+                      </button>
+                    </li>
+                  } @empty {
+                    <li class="nf-placeholder">
+                      <i class="feather icon-check-circle"></i>
+                      <p>Aucune demande en attente.</p>
+                    </li>
+                  }
+                </ul>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-5">
+          <div class="card nf-card">
+            <div class="nf-card__header">
+              <h5><i class="feather icon-sun"></i> Aujourd'hui</h5>
+            </div>
+            <div class="nf-card__body">
+              <ul class="nf-agenda">
+                @for (r of aujourdhui(); track r.id) {
+                  <li class="nf-agenda__item">
+                    <div class="nf-agenda__time">{{ r.dateHeure | date: 'HH:mm' }}</div>
+                    <div class="nf-agenda__body">
+                      <div class="nf-agenda__title">{{ r.patient.prenom }} {{ r.patient.nom }}</div>
+                      <div class="nf-agenda__meta">jusqu'à {{ r.dateFin | date: 'HH:mm' }}</div>
+                    </div>
+                    <span class="nf-statut nf-statut--{{ r.statut | lowercase }}">{{ statutLabels[r.statut] }}</span>
+                  </li>
+                } @empty {
+                  <li class="nf-placeholder">
+                    <i class="feather icon-coffee"></i>
+                    <p>Aucune séance aujourd'hui.</p>
+                  </li>
+                }
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="card nf-card">
+            <div class="nf-card__header">
+              <h5><i class="feather icon-bar-chart-2"></i> Mes 7 prochains jours</h5>
+            </div>
+            <div class="nf-card__body">
+              @let g = graphiqueSemaine();
+              <apx-chart [chart]="g.chart!" [series]="g.series!" [xaxis]="g.xaxis!" [yaxis]="g.yaxis!" [colors]="g.colors!"
+                [plotOptions]="g.plotOptions!" [dataLabels]="g.dataLabels!" [legend]="g.legend!" [grid]="g.grid!" [tooltip]="g.tooltip!" />
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- ========== ADMINISTRATEUR ========== -->
+      @default {
+        <div class="col-xl-7">
+          <div class="card nf-card">
+            <div class="nf-card__header">
+              <h5><i class="feather icon-user-plus"></i> Inscriptions des 6 derniers mois</h5>
+            </div>
+            <div class="nf-card__body">
+              @let gi = graphiqueInscriptions();
+              <apx-chart [chart]="gi.chart!" [series]="gi.series!" [xaxis]="gi.xaxis!" [yaxis]="gi.yaxis!" [colors]="gi.colors!"
+                [plotOptions]="gi.plotOptions!" [dataLabels]="gi.dataLabels!" [legend]="gi.legend!" [grid]="gi.grid!" [tooltip]="gi.tooltip!" />
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-5">
+          <div class="card nf-card">
+            <div class="nf-card__header">
+              <h5><i class="feather icon-pie-chart"></i> Rendez-vous par statut</h5>
+            </div>
+            <div class="nf-card__body">
+              @if (rendezVous().length === 0) {
+                <div class="nf-placeholder">
+                  <i class="feather icon-calendar"></i>
+                  <p>Aucun rendez-vous pour le moment.</p>
+                </div>
+              } @else {
+                @let gs = graphiqueStatuts();
+                <apx-chart [chart]="gs.chart!" [series]="gs.series!" [labels]="gs.labels!" [colors]="gs.colors!" [legend]="gs.legend!"
+                  [dataLabels]="gs.dataLabels!" [stroke]="gs.stroke!" [plotOptions]="gs.plotOptions!" />
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="card nf-card">
+            <div class="nf-card__header d-flex align-items-center">
+              <h5><i class="feather icon-calendar"></i> Prochains rendez-vous</h5>
+              <a routerLink="/rendez-vous" class="ms-auto nf-link">Tout voir</a>
+            </div>
+            <div class="nf-card__body">
+              <ul class="nf-agenda">
+                @for (r of aVenir().slice(0, 5); track r.id) {
+                  <li class="nf-agenda__item">
+                    <div class="nf-agenda__date">
+                      <span>{{ r.dateHeure | date: 'd' }}</span>
+                      <small>{{ r.dateHeure | date: 'MMM' }}</small>
+                    </div>
+                    <div class="nf-agenda__body">
+                      <div class="nf-agenda__title">{{ r.patient.prenom }} {{ r.patient.nom }} <span class="text-muted fw-normal">avec</span> {{ r.therapeute.prenom }} {{ r.therapeute.nom }}</div>
+                      <div class="nf-agenda__meta">{{ r.dateHeure | date: 'EEEE' }} · {{ r.dateHeure | date: 'HH:mm' }} – {{ r.dateFin | date: 'HH:mm' }}</div>
+                    </div>
+                    <span class="nf-statut nf-statut--{{ r.statut | lowercase }}">{{ statutLabels[r.statut] }}</span>
+                  </li>
+                } @empty {
+                  <li class="nf-placeholder">
+                    <i class="feather icon-calendar"></i>
+                    <p>Aucun rendez-vous à venir.</p>
+                  </li>
+                }
+              </ul>
+            </div>
+          </div>
+        </div>
+      }
+    }
+  </div>
+</div>

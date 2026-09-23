@@ -1,0 +1,7 @@
+# Copier ce fichier en application-local.properties et l'adapter a votre poste.
+# application-local.properties est ignore par git.
+spring.datasource.url=jdbc:postgresql://localhost:5432/nafsiti
+spring.datasource.username=postgres
+spring.datasource.password=votre_mot_de_passe
+# Generer une cle : openssl rand -base64 48
+app.jwt.secret=remplacer_par_une_cle_base64_d_au_moins_32_octets

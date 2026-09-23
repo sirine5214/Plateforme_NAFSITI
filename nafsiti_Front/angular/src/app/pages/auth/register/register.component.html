@@ -1,0 +1,115 @@
+<div class="nf-auth">
+  <app-auth-brand />
+
+  <main class="nf-auth-panel">
+    <div class="nf-auth-card nf-auth-card--wide">
+      <img src="assets/images/logo-dark.png" alt="Nafsiti" class="nf-auth-card__logo-mobile" />
+      <h1 class="nf-auth-card__title">Créer votre compte</h1>
+      <p class="nf-auth-card__subtitle">Rejoignez Nafsiti et commencez à prendre soin de vous.</p>
+
+      @if (erreur()) {
+        <div class="alert alert-danger nf-alert" role="alert">
+          <i class="feather icon-alert-circle"></i>
+          <span>{{ erreur() }}</span>
+        </div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+        <fieldset class="nf-field">
+          <legend class="form-label">Je suis</legend>
+          <div class="nf-role-choice">
+            @for (r of roles; track r.value) {
+              <label class="nf-role-option" [class.is-selected]="form.controls.role.value === r.value">
+                <input type="radio" formControlName="role" [value]="r.value" />
+                <i class="feather {{ r.icon }}"></i>
+                <span>
+                  <strong>{{ r.label }}</strong>
+                  <small>{{ r.description }}</small>
+                </span>
+              </label>
+            }
+          </div>
+        </fieldset>
+
+        <div class="row g-3">
+          <div class="col-sm-6 nf-field">
+            <label for="prenom" class="form-label">Prénom</label>
+            <input id="prenom" type="text" class="form-control" formControlName="prenom" autocomplete="given-name"
+              [class.is-invalid]="invalide('prenom')" />
+            @if (invalide('prenom')) {
+              <div class="nf-error">Le prénom est obligatoire</div>
+            }
+          </div>
+          <div class="col-sm-6 nf-field">
+            <label for="nom" class="form-label">Nom</label>
+            <input id="nom" type="text" class="form-control" formControlName="nom" autocomplete="family-name"
+              [class.is-invalid]="invalide('nom')" />
+            @if (invalide('nom')) {
+              <div class="nf-error">Le nom est obligatoire</div>
+            }
+          </div>
+        </div>
+
+        <div class="nf-field">
+          <label for="email" class="form-label">Adresse email</label>
+          <div class="nf-input-icon">
+            <i class="feather icon-mail"></i>
+            <input id="email" type="email" class="form-control" formControlName="email" placeholder="vous@exemple.com"
+              autocomplete="email" [class.is-invalid]="invalide('email')" />
+          </div>
+          @if (invalide('email')) {
+            <div class="nf-error">
+              {{ form.controls.email.hasError('required') ? "L'email est obligatoire" : 'Adresse email invalide' }}
+            </div>
+          }
+        </div>
+
+        <div class="nf-field">
+          <label for="motDePasse" class="form-label">Mot de passe</label>
+          <div class="nf-input-icon">
+            <i class="feather icon-lock"></i>
+            <input id="motDePasse" [type]="afficherMotDePasse() ? 'text' : 'password'" class="form-control"
+              formControlName="motDePasse" autocomplete="new-password" [class.is-invalid]="invalide('motDePasse')" />
+            <button type="button" class="nf-input-toggle" (click)="afficherMotDePasse.set(!afficherMotDePasse())"
+              [attr.aria-label]="afficherMotDePasse() ? 'Masquer le mot de passe' : 'Afficher le mot de passe'">
+              <i class="feather" [class.icon-eye]="!afficherMotDePasse()" [class.icon-eye-off]="afficherMotDePasse()"></i>
+            </button>
+          </div>
+          <ul class="nf-password-rules">
+            <li [class.ok]="regle('longueur')"><i class="feather icon-check"></i>8 caractères minimum</li>
+            <li [class.ok]="regle('lettre')"><i class="feather icon-check"></i>Une lettre</li>
+            <li [class.ok]="regle('chiffre')"><i class="feather icon-check"></i>Un chiffre</li>
+          </ul>
+        </div>
+
+        <div class="nf-field">
+          <label for="confirmation" class="form-label">Confirmer le mot de passe</label>
+          <div class="nf-input-icon">
+            <i class="feather icon-lock"></i>
+            <input id="confirmation" [type]="afficherMotDePasse() ? 'text' : 'password'" class="form-control"
+              formControlName="confirmation" autocomplete="new-password" [class.is-invalid]="invalide('confirmation')" />
+          </div>
+          @if (invalide('confirmation')) {
+            <div class="nf-error">
+              {{ form.controls.confirmation.hasError('required') ? 'Veuillez confirmer le mot de passe' : 'Les mots de passe ne correspondent pas' }}
+            </div>
+          }
+        </div>
+
+        <button type="submit" class="btn btn-primary nf-btn-block" [disabled]="chargement()">
+          @if (chargement()) {
+            <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+            Création du compte…
+          } @else {
+            Créer mon compte
+          }
+        </button>
+      </form>
+
+      <p class="nf-auth-card__footer">
+        Déjà inscrit(e) ?
+        <a [routerLink]="['/login']">Se connecter</a>
+      </p>
+    </div>
+  </main>
+</div>

@@ -1,0 +1,181 @@
+<div class="nf-page">
+  <div class="nf-page-header">
+    <div>
+      <h4 class="nf-page-title">Gestion des utilisateurs</h4>
+      <p class="nf-page-subtitle">Patients, thérapeutes et administrateurs de la plateforme Nafsiti.</p>
+    </div>
+    <button type="button" class="btn btn-primary" (click)="ouvrirFormulaire()">
+      <i class="feather icon-user-plus me-1"></i> Nouvel utilisateur
+    </button>
+  </div>
+
+  @if (notification(); as n) {
+    <div class="alert alert-{{ n.type }} nf-alert nf-alert--floating" role="status">
+      <i class="feather" [class.icon-check-circle]="n.type === 'success'" [class.icon-alert-circle]="n.type === 'danger'"></i>
+      <span>{{ n.texte }}</span>
+      <button type="button" class="btn-close" aria-label="Fermer" (click)="notification.set(null)"></button>
+    </div>
+  }
+
+  <!-- Statistiques -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-xl-3">
+      <div class="nf-stat">
+        <span class="nf-stat__icon"><i class="feather icon-users"></i></span>
+        <div>
+          <div class="nf-stat__value">{{ stats()?.total ?? '—' }}</div>
+          <div class="nf-stat__label">Utilisateurs</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-xl-3">
+      <div class="nf-stat">
+        <span class="nf-stat__icon nf-stat__icon--sage"><i class="feather icon-user"></i></span>
+        <div>
+          <div class="nf-stat__value">{{ stats()?.patients ?? '—' }}</div>
+          <div class="nf-stat__label">Patients</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-xl-3">
+      <div class="nf-stat">
+        <span class="nf-stat__icon nf-stat__icon--mint"><i class="feather icon-award"></i></span>
+        <div>
+          <div class="nf-stat__value">{{ stats()?.therapeutes ?? '—' }}</div>
+          <div class="nf-stat__label">Thérapeutes</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-xl-3">
+      <div class="nf-stat">
+        <span class="nf-stat__icon nf-stat__icon--muted"><i class="feather icon-user-x"></i></span>
+        <div>
+          <div class="nf-stat__value">{{ stats()?.inactifs ?? '—' }}</div>
+          <div class="nf-stat__label">Comptes désactivés</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card nf-card">
+    <!-- Filtres -->
+    <form class="nf-toolbar" [formGroup]="filtres" (ngSubmit)="charger(false)">
+      <div class="nf-input-icon nf-toolbar__search">
+        <i class="feather icon-search"></i>
+        <input type="search" class="form-control" formControlName="recherche" placeholder="Rechercher par nom, prénom ou email"
+          aria-label="Rechercher un utilisateur" />
+      </div>
+      <select class="form-select" formControlName="role" aria-label="Filtrer par rôle">
+        <option value="">Tous les rôles</option>
+        @for (r of roles; track r) {
+          <option [value]="r">{{ roleLabels[r] }}</option>
+        }
+      </select>
+      <select class="form-select" formControlName="actif" aria-label="Filtrer par statut">
+        <option value="">Tous les statuts</option>
+        <option value="true">Actifs</option>
+        <option value="false">Désactivés</option>
+      </select>
+      <button type="button" class="btn btn-light" (click)="reinitialiserFiltres()" title="Réinitialiser les filtres">
+        <i class="feather icon-rotate-ccw"></i>
+      </button>
+    </form>
+
+    @if (erreur()) {
+      <div class="alert alert-danger nf-alert m-3" role="alert">
+        <i class="feather icon-alert-circle"></i>
+        <span>{{ erreur() }}</span>
+        <button type="button" class="btn btn-sm btn-outline-danger ms-auto" (click)="charger()">Réessayer</button>
+      </div>
+    }
+
+    <div class="table-responsive">
+      <table class="table nf-table mb-0">
+        <thead>
+          <tr>
+            <th scope="col">Utilisateur</th>
+            <th scope="col">Rôle</th>
+            <th scope="col">Statut</th>
+            <th scope="col">Inscrit le</th>
+            <th scope="col" class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (chargement() && utilisateurs().length === 0) {
+            <tr>
+              <td colspan="5" class="nf-table__empty">
+                <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span> Chargement…
+              </td>
+            </tr>
+          } @else {
+            @for (u of utilisateursPage(); track u.id) {
+              <tr [class.is-inactive]="!u.actif">
+                <td>
+                  <div class="nf-user-cell">
+                    <span class="nf-avatar nf-avatar--{{ u.role | lowercase }}">{{ initiales(u) }}</span>
+                    <div>
+                      <div class="nf-user-cell__name">
+                        {{ u.prenom }} {{ u.nom }}
+                        @if (u.id === idConnecte()) {
+                          <span class="nf-you">vous</span>
+                        }
+                      </div>
+                      <div class="nf-user-cell__email">{{ u.email }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="nf-badge nf-badge--{{ u.role | lowercase }}">{{ roleLabels[u.role] }}</span>
+                </td>
+                <td>
+                  <div class="form-check form-switch nf-switch mb-0">
+                    <input class="form-check-input" type="checkbox" role="switch" [id]="'statut-' + u.id" [checked]="u.actif"
+                      [disabled]="u.id === idConnecte() || enCours() === u.id" (change)="$any($event.target).checked = u.actif; basculerStatut(u)" />
+                    <label class="form-check-label" [for]="'statut-' + u.id">{{ u.actif ? 'Actif' : 'Désactivé' }}</label>
+                  </div>
+                </td>
+                <td class="text-muted">{{ u.dateCreation | date: 'dd/MM/yyyy' }}</td>
+                <td class="text-end text-nowrap">
+                  <button type="button" class="btn nf-icon-btn" title="Modifier" (click)="ouvrirFormulaire(u)">
+                    <i class="feather icon-edit-2"></i>
+                  </button>
+                  <button type="button" class="btn nf-icon-btn nf-icon-btn--danger" title="Supprimer"
+                    [disabled]="u.id === idConnecte() || enCours() === u.id" (click)="confirmerSuppression(u, confirmation)">
+                    <i class="feather icon-trash-2"></i>
+                  </button>
+
+                  <ng-template #confirmation let-modal>
+                    <div class="modal-body text-center nf-confirm">
+                      <span class="nf-confirm__icon"><i class="feather icon-trash-2"></i></span>
+                      <h5>Supprimer {{ u.prenom }} {{ u.nom }} ?</h5>
+                      <p class="text-muted">Cette action est définitive : le compte et ses accès seront supprimés.</p>
+                      <div class="d-flex justify-content-center gap-2">
+                        <button type="button" class="btn btn-light" (click)="modal.dismiss()">Annuler</button>
+                        <button type="button" class="btn btn-danger" (click)="modal.close()">Supprimer</button>
+                      </div>
+                    </div>
+                  </ng-template>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5" class="nf-table__empty">
+                  <i class="feather icon-users d-block mb-2"></i>
+                  Aucun utilisateur ne correspond à ces critères.
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (utilisateurs().length > taillePage) {
+      <div class="nf-table-footer">
+        <span class="text-muted">{{ utilisateurs().length }} utilisateurs</span>
+        <ngb-pagination [collectionSize]="utilisateurs().length" [pageSize]="taillePage" [page]="page()"
+          (pageChange)="page.set($event)" [maxSize]="5" [boundaryLinks]="true" size="sm" />
+      </div>
+    }
+  </div>
+</div>

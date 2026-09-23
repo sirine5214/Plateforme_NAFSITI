@@ -1,0 +1,92 @@
+<div class="modal-header nf-modal-header">
+  <h5 class="modal-title">
+    <i class="feather" [class.icon-user-plus]="!estEdition" [class.icon-edit-2]="estEdition"></i>
+    {{ estEdition ? "Modifier l'utilisateur" : 'Nouvel utilisateur' }}
+  </h5>
+  <button type="button" class="btn-close" aria-label="Fermer" (click)="modal.dismiss()"></button>
+</div>
+
+<form [formGroup]="form" (ngSubmit)="enregistrer()" novalidate>
+  <div class="modal-body">
+    @if (erreur()) {
+      <div class="alert alert-danger nf-alert" role="alert">
+        <i class="feather icon-alert-circle"></i>
+        <span>{{ erreur() }}</span>
+      </div>
+    }
+
+    <div class="row g-3">
+      <div class="col-sm-6 nf-field">
+        <label for="uf-prenom" class="form-label">Prénom</label>
+        <input id="uf-prenom" type="text" class="form-control" formControlName="prenom" [class.is-invalid]="invalide('prenom')" />
+        @if (invalide('prenom')) {
+          <div class="nf-error">Le prénom est obligatoire</div>
+        }
+      </div>
+      <div class="col-sm-6 nf-field">
+        <label for="uf-nom" class="form-label">Nom</label>
+        <input id="uf-nom" type="text" class="form-control" formControlName="nom" [class.is-invalid]="invalide('nom')" />
+        @if (invalide('nom')) {
+          <div class="nf-error">Le nom est obligatoire</div>
+        }
+      </div>
+    </div>
+
+    <div class="nf-field">
+      <label for="uf-email" class="form-label">Adresse email</label>
+      <input id="uf-email" type="email" class="form-control" formControlName="email" [class.is-invalid]="invalide('email')" />
+      @if (invalide('email')) {
+        <div class="nf-error">
+          {{ form.controls.email.hasError('required') ? "L'email est obligatoire" : 'Adresse email invalide' }}
+        </div>
+      }
+    </div>
+
+    <div class="row g-3">
+      <div class="col-sm-6 nf-field">
+        <label for="uf-role" class="form-label">Rôle</label>
+        <select id="uf-role" class="form-select" formControlName="role">
+          @for (r of roles; track r) {
+            <option [value]="r">{{ roleLabels[r] }}</option>
+          }
+        </select>
+      </div>
+      <div class="col-sm-6 nf-field">
+        <span class="form-label d-block">Statut du compte</span>
+        <div class="form-check form-switch nf-switch">
+          <input id="uf-actif" class="form-check-input" type="checkbox" role="switch" formControlName="actif" />
+          <label class="form-check-label" for="uf-actif">{{ form.controls.actif.value ? 'Actif' : 'Désactivé' }}</label>
+        </div>
+      </div>
+    </div>
+    @if (estSoiMeme) {
+      <p class="nf-hint"><i class="feather icon-info"></i> Vous ne pouvez pas modifier votre propre rôle ni désactiver votre compte.</p>
+    }
+
+    <div class="nf-field">
+      <label for="uf-mdp" class="form-label">
+        Mot de passe
+        @if (estEdition) {
+          <small class="text-muted">(laisser vide pour ne pas le changer)</small>
+        }
+      </label>
+      <input id="uf-mdp" type="password" class="form-control" formControlName="motDePasse" autocomplete="new-password"
+        [class.is-invalid]="invalide('motDePasse')" />
+      @if (invalide('motDePasse')) {
+        <div class="nf-error">
+          {{ form.controls.motDePasse.hasError('required') ? 'Le mot de passe est obligatoire' : '8 caractères minimum, dont une lettre et un chiffre' }}
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-light" (click)="modal.dismiss()">Annuler</button>
+    <button type="submit" class="btn btn-primary" [disabled]="enregistrement()">
+      @if (enregistrement()) {
+        <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+      }
+      {{ estEdition ? 'Enregistrer' : "Créer l'utilisateur" }}
+    </button>
+  </div>
+</form>

@@ -1,0 +1,117 @@
+<div class="nf-page">
+  <div class="nf-page-header">
+    <div>
+      <h4 class="nf-page-title">Prendre un rendez-vous</h4>
+      <p class="nf-page-subtitle">Choisissez un thérapeute puis un créneau disponible.</p>
+    </div>
+    <a routerLink="/rendez-vous" class="btn btn-light">
+      <i class="feather icon-arrow-left me-1"></i> Mes rendez-vous
+    </a>
+  </div>
+
+  @if (erreur()) {
+    <div class="alert alert-danger nf-alert mb-3" role="alert">
+      <i class="feather icon-alert-circle"></i>
+      <span>{{ erreur() }}</span>
+    </div>
+  }
+
+  <div class="row g-4">
+    <!-- 1. Thérapeutes -->
+    <div class="col-lg-4">
+      <div class="card nf-card">
+        <div class="nf-card__header">
+          <h5><span class="nf-step">1</span> Thérapeute</h5>
+        </div>
+        <div class="nf-card__body nf-pick-list">
+          @if (chargementTherapeutes()) {
+            <div class="text-muted"><span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Chargement…</div>
+          } @else {
+            @for (t of therapeutes(); track t.id) {
+              <button type="button" class="nf-pick" [class.is-active]="therapeute()?.id === t.id" (click)="choisirTherapeute(t)"
+                [attr.aria-pressed]="therapeute()?.id === t.id">
+                <span class="nf-avatar nf-avatar--therapeute">{{ initiales(t) }}</span>
+                <span class="nf-pick__text">
+                  <span class="nf-pick__name">{{ t.prenom }} {{ t.nom }}</span>
+                  <span class="nf-pick__meta">
+                    {{ t.creneauxLibres === 0 ? 'Aucun créneau libre' : t.creneauxLibres + ' créneau' + (t.creneauxLibres > 1 ? 'x' : '') + ' libre' + (t.creneauxLibres > 1 ? 's' : '') }}
+                  </span>
+                </span>
+                <i class="feather icon-chevron-right nf-pick__chevron"></i>
+              </button>
+            } @empty {
+              <p class="text-muted mb-0">Aucun thérapeute n'est inscrit pour le moment.</p>
+            }
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Créneaux -->
+    <div class="col-lg-8">
+      <div class="card nf-card">
+        <div class="nf-card__header">
+          <h5><span class="nf-step">2</span> Créneau</h5>
+        </div>
+        <div class="nf-card__body">
+          @if (!therapeute()) {
+            <div class="nf-placeholder">
+              <i class="feather icon-user"></i>
+              <p>Sélectionnez un thérapeute pour voir ses disponibilités.</p>
+            </div>
+          } @else if (chargementCreneaux()) {
+            <div class="text-muted"><span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Chargement des créneaux…</div>
+          } @else {
+            @for (j of jours(); track j.jour) {
+              <div class="nf-day">
+                <div class="nf-day__title">{{ j.jour | date: 'EEEE d MMMM' }}</div>
+                <div class="nf-slots">
+                  @for (c of j.creneaux; track c.id) {
+                    <button type="button" class="nf-slot" [class.is-active]="creneau()?.id === c.id" (click)="choisirCreneau(c)"
+                      [attr.aria-pressed]="creneau()?.id === c.id">
+                      {{ c.debut | date: 'HH:mm' }}
+                      <small>– {{ c.fin | date: 'HH:mm' }}</small>
+                    </button>
+                  }
+                </div>
+              </div>
+            } @empty {
+              <div class="nf-placeholder">
+                <i class="feather icon-calendar"></i>
+                <p>{{ therapeute()!.prenom }} {{ therapeute()!.nom }} n'a aucun créneau libre pour le moment.</p>
+              </div>
+            }
+          }
+
+          <!-- 3. Confirmation -->
+          @if (creneau(); as c) {
+            <form class="nf-booking" [formGroup]="form" (ngSubmit)="reserver()">
+              <div class="nf-booking__summary">
+                <i class="feather icon-calendar"></i>
+                <div>
+                  <strong>{{ c.debut | date: "EEEE d MMMM 'à' HH:mm" }}</strong>
+                  <div class="text-muted">avec {{ therapeute()!.prenom }} {{ therapeute()!.nom }} · jusqu'à {{ c.fin | date: 'HH:mm' }}</div>
+                </div>
+              </div>
+              <div class="nf-field">
+                <label for="rdv-motif" class="form-label">Motif <span class="text-muted">(facultatif)</span></label>
+                <textarea id="rdv-motif" class="form-control" rows="3" formControlName="motif" maxlength="500"
+                  placeholder="Ce dont vous souhaitez parler, en quelques mots…"></textarea>
+                <div class="nf-hint mt-1 mb-0">{{ form.controls.motif.value.length }}/500</div>
+              </div>
+              <div class="d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-light" (click)="creneau.set(null)">Changer de créneau</button>
+                <button type="submit" class="btn btn-primary" [disabled]="envoi()">
+                  @if (envoi()) {
+                    <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
+                  }
+                  Demander ce rendez-vous
+                </button>
+              </div>
+            </form>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

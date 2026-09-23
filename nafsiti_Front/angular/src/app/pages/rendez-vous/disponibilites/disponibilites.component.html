@@ -1,0 +1,128 @@
+<div class="nf-page">
+  <div class="nf-page-header">
+    <div>
+      <h4 class="nf-page-title">Mes disponibilités</h4>
+      <p class="nf-page-subtitle">Ajoutez les créneaux où vos patients peuvent réserver une séance.</p>
+    </div>
+    <a routerLink="/rendez-vous" class="btn btn-light">
+      <i class="feather icon-calendar me-1"></i> Mes rendez-vous
+    </a>
+  </div>
+
+  @if (notification(); as n) {
+    <div class="alert alert-{{ n.type }} nf-alert nf-alert--floating" role="status">
+      <i class="feather" [class.icon-check-circle]="n.type === 'success'" [class.icon-alert-circle]="n.type === 'danger'"></i>
+      <span>{{ n.texte }}</span>
+      <button type="button" class="btn-close" aria-label="Fermer" (click)="notification.set(null)"></button>
+    </div>
+  }
+
+  <div class="row g-4">
+    <!-- Ajouter un créneau -->
+    <div class="col-lg-4">
+      <div class="card nf-card">
+        <div class="nf-card__header">
+          <h5><i class="feather icon-plus-circle"></i> Ajouter un créneau</h5>
+        </div>
+        <form class="nf-card__body" [formGroup]="form" (ngSubmit)="ajouter()" novalidate>
+          @if (erreurForm()) {
+            <div class="alert alert-danger nf-alert" role="alert">
+              <i class="feather icon-alert-circle"></i>
+              <span>{{ erreurForm() }}</span>
+            </div>
+          }
+          <div class="nf-field">
+            <label for="dispo-date" class="form-label">Date</label>
+            <input id="dispo-date" type="date" class="form-control" formControlName="date" [min]="aujourdHui" />
+          </div>
+          <div class="row g-3">
+            <div class="col-6 nf-field">
+              <label for="dispo-heure" class="form-label">Heure</label>
+              <input id="dispo-heure" type="time" class="form-control" formControlName="heure" step="900" />
+            </div>
+            <div class="col-6 nf-field">
+              <label for="dispo-duree" class="form-label">Durée</label>
+              <select id="dispo-duree" class="form-select" formControlName="dureeMinutes">
+                @for (d of durees; track d) {
+                  <option [ngValue]="d">{{ libelleDuree(d) }}</option>
+                }
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary w-100" [disabled]="envoi()">
+            @if (envoi()) {
+              <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
+            }
+            Ajouter le créneau
+          </button>
+          <p class="nf-hint mt-3 mb-0">
+            <i class="feather icon-info me-1"></i>Un créneau réservé ne peut pas être supprimé : annulez d'abord le rendez-vous.
+          </p>
+        </form>
+      </div>
+    </div>
+
+    <!-- Créneaux à venir -->
+    <div class="col-lg-8">
+      <div class="card nf-card">
+        <div class="nf-card__header d-flex align-items-center">
+          <h5><i class="feather icon-clock"></i> Créneaux à venir</h5>
+          <span class="ms-auto d-flex gap-2">
+            <span class="nf-statut nf-statut--libre">{{ nbLibres() }} libre{{ nbLibres() > 1 ? 's' : '' }}</span>
+            <span class="nf-statut nf-statut--en_attente">{{ nbReserves() }} réservé{{ nbReserves() > 1 ? 's' : '' }}</span>
+          </span>
+        </div>
+        <div class="nf-card__body">
+          @if (erreur()) {
+            <div class="alert alert-danger nf-alert" role="alert">
+              <i class="feather icon-alert-circle"></i>
+              <span>{{ erreur() }}</span>
+              <button type="button" class="btn btn-sm btn-outline-danger ms-auto" (click)="charger()">Réessayer</button>
+            </div>
+          }
+          @if (chargement() && creneaux().length === 0) {
+            <div class="text-muted"><span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Chargement…</div>
+          } @else {
+            @for (j of jours(); track j.jour) {
+              <div class="nf-day">
+                <div class="nf-day__title">{{ j.jour | date: 'EEEE d MMMM' }}</div>
+                <div class="nf-slots">
+                  @for (c of j.creneaux; track c.id) {
+                    <div class="nf-slot nf-slot--static" [class.is-reserved]="c.reserve">
+                      <span>{{ c.debut | date: 'HH:mm' }} <small>– {{ c.fin | date: 'HH:mm' }}</small></span>
+                      @if (c.reserve) {
+                        <span class="nf-slot__tag">Réservé</span>
+                      } @else {
+                        <button type="button" class="nf-slot__remove" title="Supprimer ce créneau" aria-label="Supprimer ce créneau"
+                          [disabled]="enCours() === c.id" (click)="supprimer(c, confirmation)">
+                          <i class="feather icon-x"></i>
+                        </button>
+                      }
+
+                      <ng-template #confirmation let-modal>
+                        <div class="modal-body text-center nf-confirm">
+                          <span class="nf-confirm__icon"><i class="feather icon-trash-2"></i></span>
+                          <h5>Supprimer ce créneau ?</h5>
+                          <p class="text-muted">{{ c.debut | date: "EEEE d MMMM 'de' HH:mm" }} à {{ c.fin | date: 'HH:mm' }}</p>
+                          <div class="d-flex justify-content-center gap-2">
+                            <button type="button" class="btn btn-light" (click)="modal.dismiss()">Annuler</button>
+                            <button type="button" class="btn btn-danger" (click)="modal.close()">Supprimer</button>
+                          </div>
+                        </div>
+                      </ng-template>
+                    </div>
+                  }
+                </div>
+              </div>
+            } @empty {
+              <div class="nf-placeholder">
+                <i class="feather icon-calendar"></i>
+                <p>Aucun créneau à venir. Ajoutez-en pour que vos patients puissent réserver.</p>
+              </div>
+            }
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

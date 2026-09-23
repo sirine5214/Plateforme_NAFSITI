@@ -1,0 +1,65 @@
+<div class="nf-auth">
+  <app-auth-brand />
+
+  <main class="nf-auth-panel">
+    <div class="nf-auth-card">
+      <img src="assets/images/logo-dark.png" alt="Nafsiti" class="nf-auth-card__logo-mobile" />
+      <h1 class="nf-auth-card__title">Bon retour parmi nous</h1>
+      <p class="nf-auth-card__subtitle">Connectez-vous pour retrouver votre espace bien-être.</p>
+
+      @if (erreur()) {
+        <div class="alert alert-danger nf-alert" role="alert">
+          <i class="feather icon-alert-circle"></i>
+          <span>{{ erreur() }}</span>
+        </div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+        <div class="nf-field">
+          <label for="email" class="form-label">Adresse email</label>
+          <div class="nf-input-icon">
+            <i class="feather icon-mail"></i>
+            <input id="email" type="email" class="form-control" formControlName="email" placeholder="vous@exemple.com"
+              autocomplete="email" [class.is-invalid]="invalide('email')" />
+          </div>
+          @if (invalide('email')) {
+            <div class="nf-error">
+              {{ form.controls.email.hasError('required') ? "L'email est obligatoire" : 'Adresse email invalide' }}
+            </div>
+          }
+        </div>
+
+        <div class="nf-field">
+          <label for="motDePasse" class="form-label">Mot de passe</label>
+          <div class="nf-input-icon">
+            <i class="feather icon-lock"></i>
+            <input id="motDePasse" [type]="afficherMotDePasse() ? 'text' : 'password'" class="form-control"
+              formControlName="motDePasse" placeholder="Votre mot de passe" autocomplete="current-password"
+              [class.is-invalid]="invalide('motDePasse')" />
+            <button type="button" class="nf-input-toggle" (click)="afficherMotDePasse.set(!afficherMotDePasse())"
+              [attr.aria-label]="afficherMotDePasse() ? 'Masquer le mot de passe' : 'Afficher le mot de passe'">
+              <i class="feather" [class.icon-eye]="!afficherMotDePasse()" [class.icon-eye-off]="afficherMotDePasse()"></i>
+            </button>
+          </div>
+          @if (invalide('motDePasse')) {
+            <div class="nf-error">Le mot de passe est obligatoire</div>
+          }
+        </div>
+
+        <button type="submit" class="btn btn-primary nf-btn-block" [disabled]="chargement()">
+          @if (chargement()) {
+            <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+            Connexion…
+          } @else {
+            Se connecter
+          }
+        </button>
+      </form>
+
+      <p class="nf-auth-card__footer">
+        Pas encore de compte ?
+        <a [routerLink]="['/register']">Créer un compte</a>
+      </p>
+    </div>
+  </main>
+</div>

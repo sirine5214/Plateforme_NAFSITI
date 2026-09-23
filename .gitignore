@@ -1,0 +1,24 @@
+# ===== Secrets / configuration locale =====
+**/application-local.properties
+.env
+.env.*
+
+# ===== Backend (Maven / IDE) =====
+nefsiti_back/target/
+.idea/
+*.iml
+.vscode/
+
+# ===== Frontend (Angular) =====
+node_modules/
+.angular/
+dist/
+
+# ===== Restes du template Gradient Able (non utilisés par Nafsiti) =====
+nafsiti_Front/bootstrap/
+nafsiti_Front/discord.html
+nafsiti_Front/.github/
+
+# ===== Système =====
+.DS_Store
+Thumbs.db

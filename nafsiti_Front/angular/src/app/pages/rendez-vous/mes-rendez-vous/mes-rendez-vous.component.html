@@ -1,0 +1,204 @@
+<div class="nf-page">
+  <div class="nf-page-header">
+    <div>
+      <h4 class="nf-page-title">{{ estAdmin() ? 'Tous les rendez-vous' : 'Mes rendez-vous' }}</h4>
+      <p class="nf-page-subtitle">
+        @if (estPatient()) {
+          Suivez vos séances avec vos thérapeutes.
+        } @else if (estTherapeute()) {
+          Confirmez ou annulez les demandes de vos patients.
+        } @else {
+          Vue d'ensemble des rendez-vous de la plateforme.
+        }
+      </p>
+    </div>
+    @if (estPatient()) {
+      <a routerLink="/rendez-vous/prendre" class="btn btn-primary">
+        <i class="feather icon-calendar me-1"></i> Prendre un rendez-vous
+      </a>
+    } @else if (estTherapeute()) {
+      <a routerLink="/disponibilites" class="btn btn-primary">
+        <i class="feather icon-clock me-1"></i> Gérer mes disponibilités
+      </a>
+    }
+  </div>
+
+  @if (notification(); as n) {
+    <div class="alert alert-{{ n.type }} nf-alert nf-alert--floating" role="status">
+      <i class="feather" [class.icon-check-circle]="n.type === 'success'" [class.icon-alert-circle]="n.type === 'danger'"></i>
+      <span>{{ n.texte }}</span>
+      <button type="button" class="btn-close" aria-label="Fermer" (click)="notification.set(null)"></button>
+    </div>
+  }
+
+  <!-- Statistiques -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-xl-3">
+      <div class="nf-stat">
+        <span class="nf-stat__icon"><i class="feather icon-calendar"></i></span>
+        <div>
+          <div class="nf-stat__value">{{ stats().aVenir }}</div>
+          <div class="nf-stat__label">À venir</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-xl-3">
+      <div class="nf-stat">
+        <span class="nf-stat__icon nf-stat__icon--sage"><i class="feather icon-clock"></i></span>
+        <div>
+          <div class="nf-stat__value">{{ stats().enAttente }}</div>
+          <div class="nf-stat__label">En attente</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-xl-3">
+      <div class="nf-stat">
+        <span class="nf-stat__icon nf-stat__icon--mint"><i class="feather icon-check-circle"></i></span>
+        <div>
+          <div class="nf-stat__value">{{ stats().confirmes }}</div>
+          <div class="nf-stat__label">Confirmés</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-xl-3">
+      <div class="nf-stat">
+        <span class="nf-stat__icon nf-stat__icon--muted"><i class="feather icon-x-circle"></i></span>
+        <div>
+          <div class="nf-stat__value">{{ stats().annules }}</div>
+          <div class="nf-stat__label">Annulés</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card nf-card">
+    <div class="nf-toolbar">
+      <div class="nf-segmented" role="tablist" aria-label="Filtrer les rendez-vous">
+        @for (f of filtres; track f.valeur) {
+          <button type="button" role="tab" class="nf-segmented__item" [class.is-active]="filtre() === f.valeur"
+            [attr.aria-selected]="filtre() === f.valeur" (click)="filtre.set(f.valeur)">
+            {{ f.label }}
+          </button>
+        }
+      </div>
+      <button type="button" class="btn btn-light ms-auto" (click)="charger()" title="Actualiser">
+        <i class="feather icon-refresh-cw"></i>
+      </button>
+    </div>
+
+    @if (erreur()) {
+      <div class="alert alert-danger nf-alert m-3" role="alert">
+        <i class="feather icon-alert-circle"></i>
+        <span>{{ erreur() }}</span>
+        <button type="button" class="btn btn-sm btn-outline-danger ms-auto" (click)="charger()">Réessayer</button>
+      </div>
+    }
+
+    <div class="table-responsive">
+      <table class="table nf-table mb-0">
+        <thead>
+          <tr>
+            <th scope="col">Date</th>
+            @if (estAdmin()) {
+              <th scope="col">Patient</th>
+              <th scope="col">Thérapeute</th>
+            } @else {
+              <th scope="col">{{ estPatient() ? 'Thérapeute' : 'Patient' }}</th>
+            }
+            <th scope="col">Motif</th>
+            <th scope="col">Statut</th>
+            <th scope="col" class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (chargement() && rendezVous().length === 0) {
+            <tr>
+              <td [attr.colspan]="estAdmin() ? 6 : 5" class="nf-table__empty">
+                <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span> Chargement…
+              </td>
+            </tr>
+          } @else {
+            @for (r of rendezVousFiltres(); track r.id) {
+              <tr [class.is-inactive]="r.statut === 'ANNULE' || estPasse(r.dateHeure)">
+                <td>
+                  <div class="nf-date-cell">
+                    <span class="nf-date-cell__day">{{ r.dateHeure | date: 'EEE d MMM yyyy' }}</span>
+                    <span class="nf-date-cell__time">{{ r.dateHeure | date: 'HH:mm' }} – {{ r.dateFin | date: 'HH:mm' }}</span>
+                  </div>
+                </td>
+                @if (estAdmin()) {
+                  <td>
+                    <div class="nf-user-cell">
+                      <span class="nf-avatar nf-avatar--sm">{{ initiales(r.patient) }}</span>
+                      <div class="nf-user-cell__name">{{ r.patient.prenom }} {{ r.patient.nom }}</div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="nf-user-cell">
+                      <span class="nf-avatar nf-avatar--sm nf-avatar--therapeute">{{ initiales(r.therapeute) }}</span>
+                      <div class="nf-user-cell__name">{{ r.therapeute.prenom }} {{ r.therapeute.nom }}</div>
+                    </div>
+                  </td>
+                } @else {
+                  <td>
+                    <div class="nf-user-cell">
+                      <span class="nf-avatar nf-avatar--sm" [class.nf-avatar--therapeute]="estPatient()">
+                        {{ initiales(interlocuteur(r)) }}
+                      </span>
+                      <div>
+                        <div class="nf-user-cell__name">{{ interlocuteur(r).prenom }} {{ interlocuteur(r).nom }}</div>
+                        <div class="nf-user-cell__email">{{ interlocuteur(r).email }}</div>
+                      </div>
+                    </div>
+                  </td>
+                }
+                <td class="nf-motif" [title]="r.motif ?? ''">{{ r.motif || '—' }}</td>
+                <td>
+                  <span class="nf-statut nf-statut--{{ r.statut | lowercase }}">{{ statutLabels[r.statut] }}</span>
+                </td>
+                <td class="text-end text-nowrap">
+                  @if (peutConfirmer(r)) {
+                    <button type="button" class="btn btn-sm btn-primary me-1" [disabled]="enCours() === r.id" (click)="confirmer(r)">
+                      <i class="feather icon-check me-1"></i>Confirmer
+                    </button>
+                  }
+                  @if (peutAnnuler(r)) {
+                    <button type="button" class="btn nf-icon-btn nf-icon-btn--danger" title="Annuler le rendez-vous"
+                      [disabled]="enCours() === r.id" (click)="demanderAnnulation(r, confirmation)">
+                      <i class="feather icon-x-circle"></i>
+                    </button>
+                  }
+
+                  <ng-template #confirmation let-modal>
+                    <div class="modal-body text-center nf-confirm">
+                      <span class="nf-confirm__icon"><i class="feather icon-calendar"></i></span>
+                      <h5>Annuler ce rendez-vous ?</h5>
+                      <p class="text-muted">
+                        {{ r.dateHeure | date: "EEEE d MMMM 'à' HH:mm" }} avec {{ interlocuteur(r).prenom }} {{ interlocuteur(r).nom }}.
+                        Le créneau sera libéré.
+                      </p>
+                      <div class="d-flex justify-content-center gap-2">
+                        <button type="button" class="btn btn-light" (click)="modal.dismiss()">Retour</button>
+                        <button type="button" class="btn btn-danger" (click)="modal.close()">Annuler le rendez-vous</button>
+                      </div>
+                    </div>
+                  </ng-template>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td [attr.colspan]="estAdmin() ? 6 : 5" class="nf-table__empty">
+                  <i class="feather icon-calendar d-block mb-2"></i>
+                  Aucun rendez-vous dans cette catégorie.
+                  @if (estPatient() && filtre() === 'A_VENIR') {
+                    <div class="mt-2"><a routerLink="/rendez-vous/prendre">Prendre un rendez-vous</a></div>
+                  }
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

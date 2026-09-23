@@ -1,0 +1,129 @@
+<div class="nf-page">
+  <div class="nf-page-header">
+    <div>
+      <h4 class="nf-page-title">Mon profil</h4>
+      <p class="nf-page-subtitle">Gérez vos informations personnelles et la sécurité de votre compte.</p>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Carte d'identité -->
+    <div class="col-lg-4">
+      @if (utilisateur(); as u) {
+        <div class="card nf-card nf-profile-card">
+          <span class="nf-avatar nf-avatar--lg">{{ initiales(u) }}</span>
+          <h5 class="mb-1">{{ u.prenom }} {{ u.nom }}</h5>
+          <p class="text-muted mb-3">{{ u.email }}</p>
+          <span class="nf-badge nf-badge--{{ u.role.toLowerCase() }}">{{ roleLabels[u.role] }}</span>
+          <ul class="nf-profile-card__meta">
+            <li>
+              <i class="feather icon-calendar"></i>
+              Membre depuis le {{ u.dateCreation | date: 'dd/MM/yyyy' }}
+            </li>
+            <li>
+              <i class="feather icon-shield"></i>
+              Compte {{ u.actif ? 'actif' : 'désactivé' }}
+            </li>
+          </ul>
+        </div>
+      }
+    </div>
+
+    <div class="col-lg-8">
+      <!-- Informations personnelles -->
+      <div class="card nf-card mb-4">
+        <div class="nf-card__header">
+          <h5><i class="feather icon-user"></i> Informations personnelles</h5>
+        </div>
+        <form class="nf-card__body" [formGroup]="profilForm" (ngSubmit)="enregistrerProfil()" novalidate>
+          @if (messageProfil(); as m) {
+            <div class="alert alert-{{ m.type }} nf-alert" role="status">
+              <i class="feather" [class.icon-check-circle]="m.type === 'success'" [class.icon-alert-circle]="m.type === 'danger'"></i>
+              <span>{{ m.texte }}</span>
+            </div>
+          }
+          <div class="row g-3">
+            <div class="col-sm-6 nf-field">
+              <label for="pf-prenom" class="form-label">Prénom</label>
+              <input id="pf-prenom" type="text" class="form-control" formControlName="prenom" [class.is-invalid]="invalideProfil('prenom')" />
+              @if (invalideProfil('prenom')) {
+                <div class="nf-error">Le prénom est obligatoire</div>
+              }
+            </div>
+            <div class="col-sm-6 nf-field">
+              <label for="pf-nom" class="form-label">Nom</label>
+              <input id="pf-nom" type="text" class="form-control" formControlName="nom" [class.is-invalid]="invalideProfil('nom')" />
+              @if (invalideProfil('nom')) {
+                <div class="nf-error">Le nom est obligatoire</div>
+              }
+            </div>
+          </div>
+          <div class="nf-field">
+            <label for="pf-email" class="form-label">Adresse email</label>
+            <input id="pf-email" type="email" class="form-control" formControlName="email" [class.is-invalid]="invalideProfil('email')" />
+            @if (invalideProfil('email')) {
+              <div class="nf-error">Adresse email invalide</div>
+            }
+          </div>
+          <div class="text-end">
+            <button type="submit" class="btn btn-primary" [disabled]="enregistrementProfil() || profilForm.pristine">
+              @if (enregistrementProfil()) {
+                <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+              }
+              Enregistrer
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Mot de passe -->
+      <div class="card nf-card">
+        <div class="nf-card__header">
+          <h5><i class="feather icon-lock"></i> Changer le mot de passe</h5>
+        </div>
+        <form class="nf-card__body" [formGroup]="mdpForm" (ngSubmit)="changerMotDePasse()" novalidate>
+          @if (messageMdp(); as m) {
+            <div class="alert alert-{{ m.type }} nf-alert" role="status">
+              <i class="feather" [class.icon-check-circle]="m.type === 'success'" [class.icon-alert-circle]="m.type === 'danger'"></i>
+              <span>{{ m.texte }}</span>
+            </div>
+          }
+          <div class="nf-field">
+            <label for="pf-ancien" class="form-label">Mot de passe actuel</label>
+            <input id="pf-ancien" type="password" class="form-control" formControlName="ancienMotDePasse" autocomplete="current-password"
+              [class.is-invalid]="invalideMdp('ancienMotDePasse')" />
+            @if (invalideMdp('ancienMotDePasse')) {
+              <div class="nf-error">Le mot de passe actuel est obligatoire</div>
+            }
+          </div>
+          <div class="row g-3">
+            <div class="col-sm-6 nf-field">
+              <label for="pf-nouveau" class="form-label">Nouveau mot de passe</label>
+              <input id="pf-nouveau" type="password" class="form-control" formControlName="nouveauMotDePasse" autocomplete="new-password"
+                [class.is-invalid]="invalideMdp('nouveauMotDePasse')" />
+              @if (invalideMdp('nouveauMotDePasse')) {
+                <div class="nf-error">8 caractères minimum, dont une lettre et un chiffre</div>
+              }
+            </div>
+            <div class="col-sm-6 nf-field">
+              <label for="pf-confirmation" class="form-label">Confirmation</label>
+              <input id="pf-confirmation" type="password" class="form-control" formControlName="confirmation" autocomplete="new-password"
+                [class.is-invalid]="invalideMdp('confirmation')" />
+              @if (invalideMdp('confirmation')) {
+                <div class="nf-error">Les mots de passe ne correspondent pas</div>
+              }
+            </div>
+          </div>
+          <div class="text-end">
+            <button type="submit" class="btn btn-primary" [disabled]="enregistrementMdp()">
+              @if (enregistrementMdp()) {
+                <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+              }
+              Modifier le mot de passe
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

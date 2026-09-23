@@ -1,0 +1,20 @@
+<ng-scrollbar (clickOutside)="navMob()" style="height: calc(100vh - 56px)">
+  <div class="navbar-content">
+    <ul class="nav pcoded-inner-navbar" (clickOutside)="fireOutClick()">
+      @for (items of navigation; track items) {
+        @if (items.type === 'group') {
+          <app-nav-group [item]="items" />
+        }
+      }
+    </ul>
+    <app-card [hidHeader]="true" cardClass="text-center nf-help-card">
+      <img src="assets/images/nafsiti-icon.png" alt="" class="nf-help-card__icon" />
+      <h6 class="mt-3">Besoin d'aide ?</h6>
+      <p>Votre bien-être, toujours vivant. Notre équipe est là pour vous accompagner.</p>
+      <a [routerLink]="['/profil']" class="btn btn-primary btn-sm text-white m-0">Mon profil</a>
+    </app-card>
+    <div class="version">
+      <label disabled class="pe-auto">v{{ currentApplicationVersion }}</label>
+    </div>
+  </div>
+</ng-scrollbar>
