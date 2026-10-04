@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import tn.esprit.pi.nefsiti.entities.RendezVous;
 import tn.esprit.pi.nefsiti.entities.StatutRendezVous;
+import tn.esprit.pi.nefsiti.entities.Utilisateur;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,6 +32,21 @@ public interface RendezVousRepository extends JpaRepository<RendezVous, Long> {
                           @Param("debut") LocalDateTime debut,
                           @Param("fin") LocalDateTime fin,
                           @Param("annule") StatutRendezVous annule);
+
+    /** Un patient et un thérapeute peuvent échanger des messages s'ils ont au moins un rendez-vous non annulé. */
+    @Query("""
+            select count(r) > 0 from RendezVous r
+            where r.patient.id = :patientId and r.therapeute.id = :therapeuteId and r.statut <> :annule
+            """)
+    boolean lienActif(@Param("patientId") Long patientId,
+                      @Param("therapeuteId") Long therapeuteId,
+                      @Param("annule") StatutRendezVous annule);
+
+    @Query("select distinct r.therapeute from RendezVous r where r.patient.id = :id and r.statut <> :annule")
+    List<Utilisateur> therapeutesDuPatient(@Param("id") Long patientId, @Param("annule") StatutRendezVous annule);
+
+    @Query("select distinct r.patient from RendezVous r where r.therapeute.id = :id and r.statut <> :annule")
+    List<Utilisateur> patientsDuTherapeute(@Param("id") Long therapeuteId, @Param("annule") StatutRendezVous annule);
 
     @Modifying
     @Query("update RendezVous r set r.disponibilite = null where r.disponibilite.id = :disponibiliteId")

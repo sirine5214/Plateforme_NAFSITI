@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 
 import { environment } from 'src/environments/environment';
-import { AuthResponse, LoginRequest, RegisterRequest, Role, Utilisateur } from '../models/utilisateur.model';
+import { AuthResponse, LoginRequest, LoginVisageRequest, RegisterRequest, Role, Utilisateur } from '../models/utilisateur.model';
 
 const TOKEN_KEY = 'nafsiti_token';
 const USER_KEY = 'nafsiti_user';
@@ -26,8 +26,21 @@ export class AuthService {
     return this._token();
   }
 
+  /** Connexion manuelle. Si `mfaRequis`, la session n'est pas ouverte : appeler `validerMfaVisage`. */
   login(req: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.api}/login`, req).pipe(tap((r) => this.ouvrirSession(r)));
+  }
+
+  /** Connexion par reconnaissance faciale (email + capture webcam). */
+  loginVisage(req: LoginVisageRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.api}/login/visage`, req).pipe(tap((r) => this.ouvrirSession(r)));
+  }
+
+  /** Second facteur demandé par l'IA (connexion inhabituelle) : confirmation par le visage. */
+  validerMfaVisage(mfaToken: string, image: string): Observable<AuthResponse> {
+    return this.http
+      .post<AuthResponse>(`${this.api}/mfa/visage`, { mfaToken, image })
+      .pipe(tap((r) => this.ouvrirSession(r)));
   }
 
   register(req: RegisterRequest): Observable<AuthResponse> {
@@ -64,6 +77,9 @@ export class AuthService {
   }
 
   private ouvrirSession(r: AuthResponse) {
+    if (r.mfaRequis || !r.token || !r.utilisateur) {
+      return; // vérification faciale encore nécessaire
+    }
     localStorage.setItem(TOKEN_KEY, r.token);
     this._token.set(r.token);
     this.majUtilisateur(r.utilisateur);

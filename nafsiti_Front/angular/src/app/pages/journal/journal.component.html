@@ -1,0 +1,183 @@
+<div class="nf-page">
+  <div class="nf-page-header">
+    <div>
+      <h4 class="nf-page-title">Mon journal</h4>
+      <p class="nf-page-subtitle">Notez votre humeur chaque jour pour mieux comprendre ce qui vous fait du bien.</p>
+    </div>
+  </div>
+
+  @if (resultat(); as r) {
+    @if (r.niveauRisque >= 2) {
+      <app-urgence class="d-block mb-4" [critique]="r.niveauRisque >= 3" />
+    } @else {
+      <div class="alert alert-success nf-alert mb-4" role="status">
+        <i class="feather icon-check-circle"></i>
+        <span>
+          Entrée enregistrée.
+          @if (r.baisseSignificative) {
+            Votre humeur semble plus basse ces derniers jours : quelques ressources pourraient vous aider.
+          }
+        </span>
+        <button type="button" class="btn-close" aria-label="Fermer" (click)="resultat.set(null)"></button>
+      </div>
+    }
+    @if (r.recommandations.length > 0) {
+      <div class="card nf-card mb-4">
+        <div class="nf-card__header">
+          <h5><i class="feather icon-compass"></i> Suggestions pour vous</h5>
+        </div>
+        <div class="nf-card__body nf-reco-list">
+          @for (code of r.recommandations; track code) {
+            @if (recommandationsInfo[code]; as info) {
+              @if (estLienInterne(info.lien)) {
+                <a class="nf-reco" [routerLink]="info.lien"><i class="feather {{ info.icon }}"></i>{{ info.label }}</a>
+              } @else {
+                <a class="nf-reco nf-reco--urgence" [href]="info.lien"><i class="feather {{ info.icon }}"></i>{{ info.label }}</a>
+              }
+            }
+          }
+        </div>
+      </div>
+    }
+  }
+
+  <div class="row g-4">
+    <!-- Nouvelle entrée -->
+    <div class="col-lg-5">
+      <div class="card nf-card">
+        <div class="nf-card__header">
+          <h5><i class="feather icon-edit-3"></i> Comment allez-vous aujourd'hui ?</h5>
+        </div>
+        <form class="nf-card__body" [formGroup]="form" (ngSubmit)="enregistrer()" novalidate>
+          @if (erreurForm()) {
+            <div class="alert alert-danger nf-alert" role="alert">
+              <i class="feather icon-alert-circle"></i>
+              <span>{{ erreurForm() }}</span>
+            </div>
+          }
+          <div class="nf-field">
+            <label for="humeur" class="form-label d-flex justify-content-between">
+              <span>Humeur</span>
+              <span class="nf-mood-value" aria-hidden="true">{{ emoji(form.controls.humeur.value) }} {{ form.controls.humeur.value }}/10</span>
+            </label>
+            <input id="humeur" type="range" class="form-range" min="1" max="10" step="1" formControlName="humeur"
+              [attr.aria-valuetext]="form.controls.humeur.value + ' sur 10'" />
+            <div class="d-flex justify-content-between nf-hint"><span>Très mal</span><span>Très bien</span></div>
+          </div>
+
+          <div class="nf-field">
+            <span class="form-label d-block">Émotions</span>
+            <div class="nf-tags" role="group" aria-label="Émotions ressenties">
+              @for (tag of tagsDisponibles; track tag) {
+                <button type="button" class="nf-tag" [class.is-active]="tags().includes(tag)" [attr.aria-pressed]="tags().includes(tag)"
+                  (click)="basculerTag(tag)">{{ tag }}</button>
+              }
+            </div>
+          </div>
+
+          <div class="nf-field">
+            <label for="texte" class="form-label">Notes <span class="text-muted">(facultatif)</span></label>
+            <textarea id="texte" class="form-control" rows="5" formControlName="texte" maxlength="5000"
+              placeholder="Ce qui s'est passé, ce que vous avez ressenti…"></textarea>
+            <div class="nf-hint mt-1 mb-0">Vos notes sont chiffrées et ne sont jamais lues par un humain.</div>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100" [disabled]="envoi()">
+            @if (envoi()) {
+              <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
+            }
+            Enregistrer
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Tendance -->
+    <div class="col-lg-7">
+      <div class="card nf-card mb-4">
+        <div class="nf-card__header d-flex align-items-center">
+          <h5><i class="feather icon-trending-up"></i> Mes 30 derniers jours</h5>
+          @if (tendance(); as t) {
+            <span class="nf-statut ms-auto" [class.nf-statut--confirme]="t.statut === 'amelioration'"
+              [class.nf-statut--en_attente]="t.statut === 'stable'" [class.nf-statut--annule]="t.statut === 'degradation'">
+              {{ statutLabels[t.statut] }}
+            </span>
+          }
+        </div>
+        <div class="nf-card__body">
+          @if (graphique(); as g) {
+            <apx-chart [chart]="g.chart!" [series]="g.series!" [xaxis]="g.xaxis!" [yaxis]="g.yaxis!" [colors]="g.colors!"
+              [stroke]="g.stroke!" [markers]="g.markers!" [dataLabels]="g.dataLabels!" [legend]="g.legend!" [grid]="g.grid!"
+              [tooltip]="g.tooltip!" />
+            @if (tendance(); as t) {
+              @if (t.moyenne7j != null && t.moyenne30j != null) {
+                <p class="nf-hint mb-0">Moyenne sur 7 jours : {{ t.moyenne7j | number: '1.1-1' }}/10 · sur 30 jours : {{ t.moyenne30j | number: '1.1-1' }}/10</p>
+              }
+            }
+          } @else {
+            <div class="nf-placeholder">
+              <i class="feather icon-bar-chart-2"></i>
+              <p>Votre courbe d'humeur apparaîtra après quelques jours d'utilisation.</p>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Historique -->
+      <div class="card nf-card">
+        <div class="nf-card__header">
+          <h5><i class="feather icon-book"></i> Historique</h5>
+        </div>
+        <div class="nf-card__body">
+          @if (erreur()) {
+            <div class="alert alert-danger nf-alert" role="alert">
+              <i class="feather icon-alert-circle"></i>
+              <span>{{ erreur() }}</span>
+              <button type="button" class="btn btn-sm btn-outline-danger ms-auto" (click)="charger()">Réessayer</button>
+            </div>
+          }
+          @if (chargement()) {
+            <div class="text-muted"><span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Chargement…</div>
+          } @else {
+            @for (e of entrees(); track e.id) {
+              <article class="nf-journal-entry">
+                <div class="nf-journal-entry__mood" aria-hidden="true">{{ emoji(e.humeur) }}</div>
+                <div class="nf-journal-entry__body">
+                  <div class="nf-journal-entry__meta">
+                    <strong>{{ e.humeur }}/10</strong>
+                    <span>{{ e.dateCreation | date: "EEEE d MMMM 'à' HH:mm" }}</span>
+                    @if (e.valence != null) {
+                      <span class="nf-hint mb-0" title="Ton du texte estimé par l'IA (1 à 5)">Ton {{ e.valence | number: '1.1-1' }}/5</span>
+                    }
+                  </div>
+                  @if (e.texte) {
+                    <p>{{ e.texte }}</p>
+                  }
+                  @if (e.tags.length > 0) {
+                    <div class="nf-tags">
+                      @for (t of e.tags; track t) {
+                        <span class="nf-tag nf-tag--static">{{ t }}</span>
+                      }
+                    </div>
+                  }
+                </div>
+                <button type="button" class="nf-icon-btn" title="Supprimer cette entrée" aria-label="Supprimer cette entrée" (click)="supprimer(e)">
+                  <i class="feather icon-trash-2"></i>
+                </button>
+              </article>
+            } @empty {
+              <div class="nf-placeholder">
+                <i class="feather icon-book-open"></i>
+                <p>Votre journal est vide. Commencez par noter votre humeur du jour.</p>
+              </div>
+            }
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="nf-hint mt-4 mb-0">
+    <i class="feather icon-info me-1"></i>Nafsiti ne pose pas de diagnostic. Les analyses automatiques servent uniquement à vous orienter.
+  </p>
+</div>

@@ -46,6 +46,30 @@ const routes: Routes = [
         loadComponent: () => import('./pages/rendez-vous/disponibilites/disponibilites.component').then((c) => c.DisponibilitesComponent)
       },
       {
+        path: 'journal',
+        data: { roles: ['PATIENT'] },
+        loadComponent: () => import('./pages/journal/journal.component').then((c) => c.JournalComponent)
+      },
+      {
+        path: 'ressources',
+        loadComponent: () => import('./pages/ressources/ressources.component').then((c) => c.RessourcesComponent)
+      },
+      {
+        path: 'messagerie',
+        data: { roles: ['PATIENT', 'THERAPEUTE'] },
+        loadComponent: () => import('./pages/messagerie/messagerie.component').then((c) => c.MessagerieComponent)
+      },
+      {
+        path: 'alertes',
+        data: { roles: ['THERAPEUTE', 'ADMINISTRATEUR'] },
+        loadComponent: () => import('./pages/alertes/alertes.component').then((c) => c.AlertesComponent)
+      },
+      {
+        path: 'moderation',
+        data: { roles: ['ADMINISTRATEUR'] },
+        loadComponent: () => import('./pages/moderation/moderation.component').then((c) => c.ModerationComponent)
+      },
+      {
         path: 'profil',
         loadComponent: () => import('./pages/profil/profil.component').then((c) => c.ProfilComponent)
       },

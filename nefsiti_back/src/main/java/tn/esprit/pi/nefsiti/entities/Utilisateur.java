@@ -41,6 +41,26 @@ public class Utilisateur {
     @Column(nullable = false, updatable = false)
     private LocalDateTime dateCreation;
 
+    /** Consentement RGPD explicite donné à l'inscription (null pour les comptes créés par un admin). */
+    private LocalDateTime dateConsentement;
+
+    /** Le patient accepte que ses alertes de détresse soient transmises à ses thérapeutes. */
+    @Column(nullable = false, columnDefinition = "boolean default false") // colonne ajoutée sur une table existante
+    @Builder.Default
+    private boolean partageAlertes = false;
+
+    // ===== Profil thérapeute (matching patient ↔ thérapeute) =====
+
+    @Column(length = 500)
+    private String specialites;
+
+    @Column(length = 500)
+    private String approche;
+
+    /** Codes de langue séparés par des virgules, ex. « fr,ar,en ». */
+    @Column(length = 50)
+    private String langues;
+
     @PrePersist
     void prePersist() {
         if (dateCreation == null) {

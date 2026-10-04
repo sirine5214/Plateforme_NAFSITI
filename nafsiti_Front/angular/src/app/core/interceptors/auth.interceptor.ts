@@ -9,7 +9,7 @@ import { AuthService } from '../services/auth.service';
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AuthService);
   const estApi = req.url.startsWith(environment.apiUrl);
-  const estAuthPublique = req.url.includes('/auth/login') || req.url.includes('/auth/register');
+  const estAuthPublique = req.url.includes('/auth/login') || req.url.includes('/auth/register') || req.url.includes('/auth/mfa');
 
   const token = auth.token;
   const requete = estApi && token && !estAuthPublique ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }) : req;

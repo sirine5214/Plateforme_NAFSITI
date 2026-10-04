@@ -124,6 +124,149 @@
           </div>
         </form>
       </div>
+
+      <!-- Reconnaissance faciale -->
+      <div class="card nf-card mt-4">
+        <div class="nf-card__header d-flex align-items-center">
+          <h5><i class="feather icon-camera"></i> Reconnaissance faciale</h5>
+          @if (visage()?.enregistre) {
+            <span class="nf-statut nf-statut--confirme ms-auto">Activée</span>
+          } @else {
+            <span class="nf-statut nf-statut--annule ms-auto">Désactivée</span>
+          }
+        </div>
+        <div class="nf-card__body">
+          @if (messageVisage(); as m) {
+            <div class="alert alert-{{ m.type }} nf-alert" role="status">
+              <i class="feather" [class.icon-check-circle]="m.type === 'success'" [class.icon-alert-circle]="m.type === 'danger'"></i>
+              <span>{{ m.texte }}</span>
+            </div>
+          }
+          <p class="text-muted">
+            Connectez-vous sans mot de passe grâce à votre visage. Elle sert aussi de vérification supplémentaire lorsqu'une
+            connexion paraît inhabituelle. Seule une empreinte numérique chiffrée est conservée, jamais votre photo.
+          </p>
+          @if (visage()?.enregistre && !capturerVisage()) {
+            <p class="mb-3">
+              <i class="feather icon-check me-1 text-primary"></i>Enregistrée le {{ visage()!.dateEnregistrement | date: "dd/MM/yyyy 'à' HH:mm" }}
+            </p>
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-light" (click)="capturerVisage.set(true)">
+                <i class="feather icon-refresh-cw me-1"></i> Réenregistrer
+              </button>
+              <button type="button" class="btn btn-outline-danger" (click)="supprimerVisage()">
+                <i class="feather icon-trash-2 me-1"></i> Supprimer
+              </button>
+            </div>
+          } @else if (!capturerVisage()) {
+            <button type="button" class="btn btn-primary" (click)="capturerVisage.set(true)">
+              <i class="feather icon-camera me-1"></i> Activer la reconnaissance faciale
+            </button>
+          } @else {
+            <app-camera-capture [nbCaptures]="3" libelle="Enregistrer mon visage (3 captures)" [desactive]="enregistrementVisage()"
+              (captures)="enregistrerVisage($event)" />
+            @if (enregistrementVisage()) {
+              <p class="nf-hint mt-2 mb-0"><span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Analyse des captures…</p>
+            }
+            <button type="button" class="btn btn-link px-0 mt-2" (click)="capturerVisage.set(false)">Annuler</button>
+          }
+        </div>
+      </div>
+
+      @if (utilisateur()?.role === 'THERAPEUTE') {
+        <!-- Profil professionnel : utilisé par le matching patient / thérapeute -->
+        <div class="card nf-card mt-4">
+          <div class="nf-card__header">
+            <h5><i class="feather icon-award"></i> Profil professionnel</h5>
+          </div>
+          <form class="nf-card__body" [formGroup]="proForm" (ngSubmit)="enregistrerProfilPro()" novalidate>
+            @if (messagePro(); as m) {
+              <div class="alert alert-{{ m.type }} nf-alert" role="status">
+                <i class="feather" [class.icon-check-circle]="m.type === 'success'" [class.icon-alert-circle]="m.type === 'danger'"></i>
+                <span>{{ m.texte }}</span>
+              </div>
+            }
+            <p class="text-muted">Ces informations permettent à l'IA de vous suggérer aux patients dont le besoin correspond à votre pratique.</p>
+            <div class="nf-field">
+              <label for="pro-specialites" class="form-label">Spécialités</label>
+              <textarea id="pro-specialites" class="form-control" rows="2" formControlName="specialites" maxlength="500"
+                placeholder="Ex. anxiété, stress au travail, troubles du sommeil, deuil"></textarea>
+            </div>
+            <div class="nf-field">
+              <label for="pro-approche" class="form-label">Approche thérapeutique</label>
+              <textarea id="pro-approche" class="form-control" rows="2" formControlName="approche" maxlength="500"
+                placeholder="Ex. thérapie cognitive et comportementale, pleine conscience"></textarea>
+            </div>
+            <div class="nf-field">
+              <label for="pro-langues" class="form-label">Langues de consultation</label>
+              <input id="pro-langues" type="text" class="form-control" formControlName="langues" placeholder="fr,ar,en"
+                [class.is-invalid]="proForm.controls.langues.invalid && proForm.controls.langues.touched" />
+              <div class="nf-hint mt-1 mb-0">Codes à deux lettres séparés par des virgules.</div>
+            </div>
+            <div class="text-end">
+              <button type="submit" class="btn btn-primary" [disabled]="enregistrementPro() || proForm.pristine">
+                @if (enregistrementPro()) {
+                  <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+                }
+                Enregistrer
+              </button>
+            </div>
+          </form>
+        </div>
+      }
+
+      <!-- Données personnelles (RGPD) -->
+      <div class="card nf-card mt-4">
+        <div class="nf-card__header">
+          <h5><i class="feather icon-shield"></i> Données personnelles</h5>
+        </div>
+        <div class="nf-card__body">
+          @if (messageRgpd(); as m) {
+            <div class="alert alert-{{ m.type }} nf-alert" role="status">
+              <i class="feather" [class.icon-check-circle]="m.type === 'success'" [class.icon-alert-circle]="m.type === 'danger'"></i>
+              <span>{{ m.texte }}</span>
+            </div>
+          }
+          @if (utilisateur(); as u) {
+            @if (u.dateConsentement) {
+              <p class="text-muted">Consentement au traitement de vos données donné le {{ u.dateConsentement | date: 'dd/MM/yyyy' }}.</p>
+            }
+            @if (u.role === 'PATIENT') {
+              <div class="form-check form-switch nf-switch mb-3">
+                <input id="partage-alertes" class="form-check-input" type="checkbox" role="switch" [checked]="u.partageAlertes"
+                  (change)="changerPartageAlertes($any($event.target).checked)" />
+                <label class="form-check-label" for="partage-alertes">
+                  Prévenir mes thérapeutes si un signal de détresse est détecté dans mon journal ou mes messages
+                </label>
+              </div>
+            }
+          }
+          <div class="d-flex flex-wrap gap-2">
+            <button type="button" class="btn btn-light" (click)="exporterDonnees()" [disabled]="exportEnCours()">
+              <i class="feather icon-download me-1"></i> Télécharger mes données
+            </button>
+            @if (utilisateur()?.role !== 'ADMINISTRATEUR') {
+              <button type="button" class="btn btn-outline-danger" (click)="supprimerCompte(confirmationSuppression)">
+                <i class="feather icon-user-x me-1"></i> Supprimer mon compte
+              </button>
+            }
+          </div>
+
+          <ng-template #confirmationSuppression let-modal>
+            <div class="modal-body text-center nf-confirm">
+              <span class="nf-confirm__icon"><i class="feather icon-alert-triangle"></i></span>
+              <h5>Supprimer définitivement votre compte ?</h5>
+              <p class="text-muted">
+                Votre journal, vos messages, vos rendez-vous et votre empreinte faciale seront effacés. Cette action est irréversible.
+              </p>
+              <div class="d-flex justify-content-center gap-2">
+                <button type="button" class="btn btn-light" (click)="modal.dismiss()">Annuler</button>
+                <button type="button" class="btn btn-danger" (click)="modal.close()">Supprimer</button>
+              </div>
+            </div>
+          </ng-template>
+        </div>
+      </div>
     </div>
   </div>
 </div>

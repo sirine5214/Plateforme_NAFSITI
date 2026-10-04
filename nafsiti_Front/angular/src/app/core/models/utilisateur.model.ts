@@ -16,6 +16,13 @@ export interface Utilisateur {
   role: Role;
   actif: boolean;
   dateCreation: string;
+  dateConsentement: string | null;
+  /** Le patient accepte que ses alertes de détresse soient transmises à ses thérapeutes. */
+  partageAlertes: boolean;
+  // Profil thérapeute (matching IA)
+  specialites: string | null;
+  approche: string | null;
+  langues: string | null;
 }
 
 export interface LoginRequest {
@@ -29,13 +36,38 @@ export interface RegisterRequest {
   email: string;
   motDePasse: string;
   role: Exclude<Role, 'ADMINISTRATEUR'>;
+  /** Consentement RGPD explicite */
+  consentement: boolean;
 }
 
+/** Connexion par reconnaissance faciale : email + capture webcam (data URL JPEG). */
+export interface LoginVisageRequest {
+  email: string;
+  image: string;
+}
+
+/**
+ * Si mfaRequis est vrai (connexion jugée inhabituelle par l'IA), aucun token n'est délivré :
+ * il faut confirmer avec son visage (mfaToken valable 5 minutes).
+ */
 export interface AuthResponse {
-  token: string;
-  type: string;
+  token: string | null;
+  type: string | null;
   expiresIn: number;
-  utilisateur: Utilisateur;
+  utilisateur: Utilisateur | null;
+  mfaRequis: boolean;
+  mfaToken: string | null;
+}
+
+export interface VisageStatut {
+  enregistre: boolean;
+  dateEnregistrement: string | null;
+}
+
+export interface ProfilTherapeuteRequest {
+  specialites: string;
+  approche: string;
+  langues: string;
 }
 
 /** Création / modification par l'administrateur (mot de passe optionnel en modification). */

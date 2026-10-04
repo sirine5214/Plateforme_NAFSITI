@@ -13,7 +13,7 @@ function motsDePasseIdentiques(group: AbstractControl): ValidationErrors | null 
   return mdp && confirmation && mdp !== confirmation ? { differents: true } : null;
 }
 
-type Champ = 'nom' | 'prenom' | 'email' | 'motDePasse' | 'confirmation';
+type Champ = 'nom' | 'prenom' | 'email' | 'motDePasse' | 'confirmation' | 'consentement';
 
 @Component({
   selector: 'app-register',
@@ -42,7 +42,8 @@ export class RegisterComponent {
       email: ['', [Validators.required, Validators.email]],
       role: this.fb.nonNullable.control<RegisterRequest['role']>('PATIENT'),
       motDePasse: ['', [Validators.required, Validators.pattern(PASSWORD_PATTERN)]],
-      confirmation: ['', [Validators.required]]
+      confirmation: ['', [Validators.required]],
+      consentement: [false, [Validators.requiredTrue]]
     },
     { validators: motsDePasseIdentiques }
   );
@@ -76,9 +77,9 @@ export class RegisterComponent {
       this.form.markAllAsTouched();
       return;
     }
-    const { nom, prenom, email, role, motDePasse } = this.form.getRawValue();
+    const { nom, prenom, email, role, motDePasse, consentement } = this.form.getRawValue();
     this.chargement.set(true);
-    this.auth.register({ nom, prenom, email, role, motDePasse }).subscribe({
+    this.auth.register({ nom, prenom, email, role, motDePasse, consentement }).subscribe({
       next: () => this.router.navigate(['/analytics']),
       error: (err) => {
         this.erreur.set(messageErreur(err, 'Inscription impossible.'));

@@ -1536,3 +1536,517 @@ fieldset.nf-field {
     }
   }
 }
+
+// =========================================================
+//  Modules IA : reconnaissance faciale, journal, ressources,
+//  messagerie, alertes
+// =========================================================
+
+// ---------- Connexion : choix de la méthode ----------
+.nf-segmented--block {
+  display: flex;
+  width: 100%;
+
+  .nf-segmented__item {
+    flex: 1;
+  }
+}
+
+.nf-consent {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: $nafsiti-sage;
+
+  .form-check-input {
+    margin-top: 3px;
+  }
+}
+
+// ---------- Caméra ----------
+.nf-camera {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: $nf-radius;
+  overflow: hidden;
+  background: $nafsiti-light;
+  border: 1px dashed $nafsiti-mint;
+
+  &.is-active {
+    border: 0;
+    background: #000;
+  }
+
+  &__video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1); // effet miroir, plus naturel pour l'utilisateur
+  }
+
+  &__guide {
+    position: absolute;
+    top: 12%;
+    left: 50%;
+    width: 46%;
+    height: 72%;
+    transform: translateX(-50%);
+    border: 3px solid rgba(255, 255, 255, 0.85);
+    border-radius: 50%;
+    box-shadow: 0 0 0 999px rgba(0, 0, 0, 0.25);
+    pointer-events: none;
+  }
+
+  &__consigne {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    background: rgba(31, 45, 39, 0.75);
+    color: #fff;
+    font-size: 13px;
+    text-align: center;
+  }
+
+  &__placeholder {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 20px;
+    text-align: center;
+    color: $nafsiti-sage;
+    font-size: 13px;
+
+    i {
+      font-size: 32px;
+      color: $nafsiti-green;
+    }
+
+    p {
+      margin: 0;
+      max-width: 280px;
+    }
+  }
+}
+
+// ---------- Ressources d'urgence ----------
+.nf-urgence {
+  display: flex;
+  gap: 16px;
+  padding: 18px 20px;
+  border-radius: 14px;
+  background: #fbf3e4;
+  border: 1px solid #f0dcb5;
+  color: $nf-ink;
+
+  &--critique {
+    background: $nf-danger-bg;
+    border-color: #efc9c9;
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    color: $nf-danger;
+    font-size: 18px;
+  }
+
+  h5 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  p {
+    margin-bottom: 12px;
+    font-size: 13px;
+  }
+
+  &__numeros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  &__numero {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 10px;
+    background: #fff;
+    color: $nf-ink;
+    font-size: 12.5px;
+    text-decoration: none;
+    border: 1px solid $nf-border;
+
+    strong {
+      font-size: 16px;
+      color: $nf-danger;
+    }
+
+    &:hover {
+      color: $nf-ink;
+      border-color: $nf-danger;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
+// ---------- Journal ----------
+.nf-mood-value {
+  font-weight: 600;
+  color: $nafsiti-green;
+}
+
+.nf-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.nf-tag {
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid $nf-border;
+  background: #fff;
+  font-size: 12.5px;
+  color: $nafsiti-sage;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+
+  &:hover {
+    border-color: $nafsiti-mint;
+    color: $nafsiti-green;
+  }
+
+  &.is-active {
+    background: $nafsiti-green;
+    border-color: $nafsiti-green;
+    color: #fff;
+  }
+
+  &--static {
+    padding: 2px 10px;
+    background: $nafsiti-light;
+    font-size: 12px;
+  }
+}
+
+.nf-journal-entry {
+  display: flex;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid $nf-border;
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  &__mood {
+    font-size: 26px;
+    line-height: 1;
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+
+    p {
+      margin: 6px 0 8px;
+      white-space: pre-line;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: baseline;
+    font-size: 12.5px;
+    color: $nafsiti-sage;
+
+    strong {
+      color: $nf-ink;
+      font-size: 14px;
+    }
+  }
+}
+
+.nf-reco-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.nf-reco {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(69, 115, 93, 0.08);
+  color: $nafsiti-green;
+  font-weight: 500;
+  font-size: 13px;
+  text-decoration: none;
+
+  &:hover {
+    background: rgba(69, 115, 93, 0.15);
+  }
+
+  &--urgence {
+    background: $nf-danger-bg;
+    color: $nf-danger;
+
+    &:hover {
+      background: #f6dcdc;
+      color: $nf-danger;
+    }
+  }
+}
+
+// ---------- Ressources ----------
+.nf-res-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.nf-res {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px;
+  border-radius: 14px;
+  border: 1px solid $nf-border;
+  background: #fff;
+  text-align: left;
+
+  &--compact {
+    background: $nafsiti-light;
+    transition: border-color 0.15s, background 0.15s;
+
+    &:hover {
+      border-color: $nafsiti-mint;
+      background: #fff;
+    }
+  }
+
+  &__type {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: $nafsiti-sage;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  &__titre {
+    color: $nf-ink;
+    font-size: 15px;
+  }
+
+  &__desc {
+    flex: 1;
+    margin: 0;
+    font-size: 13px;
+    color: $nafsiti-sage;
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 6px;
+  }
+
+  &__badge {
+    font-size: 12px;
+    color: $nafsiti-green;
+  }
+}
+
+.nf-res-contenu {
+  white-space: pre-line;
+  line-height: 1.7;
+  padding: 16px;
+  border-radius: 12px;
+  background: $nafsiti-light;
+}
+
+.nf-icon-btn.is-liked {
+  color: $nf-danger;
+}
+
+// ---------- Messagerie ----------
+.nf-chat {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  height: min(70vh, 680px);
+
+  &__contacts {
+    border-right: 1px solid $nf-border;
+    overflow-y: auto;
+    padding: 8px;
+  }
+
+  &__contact {
+    width: 100%;
+  }
+
+  &__badge {
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    border-radius: 11px;
+    background: $nafsiti-green;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__thread {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &__header {
+    padding: 14px 20px;
+    border-bottom: 1px solid $nf-border;
+  }
+
+  &__messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: $nafsiti-light;
+  }
+
+  &__composer {
+    display: flex;
+    gap: 10px;
+    padding: 14px 16px;
+    border-top: 1px solid $nf-border;
+
+    textarea {
+      resize: none;
+    }
+
+    .btn {
+      align-self: stretch;
+      min-width: 52px;
+    }
+  }
+}
+
+.nf-bulle {
+  max-width: 75%;
+  align-self: flex-start;
+  padding: 10px 14px;
+  border-radius: 14px 14px 14px 4px;
+  background: #fff;
+  border: 1px solid $nf-border;
+
+  p {
+    margin: 0;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+  }
+
+  &__meta {
+    display: block;
+    margin-top: 4px;
+    font-size: 11px;
+    color: $nafsiti-sage;
+  }
+
+  &--moi {
+    align-self: flex-end;
+    border-radius: 14px 14px 4px 14px;
+    background: $nafsiti-green;
+    border-color: $nafsiti-green;
+    color: #fff;
+
+    .nf-bulle__meta {
+      color: rgba(255, 255, 255, 0.75);
+    }
+  }
+
+  &.is-masque {
+    opacity: 0.6;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .nf-chat {
+    grid-template-columns: 1fr;
+    height: auto;
+
+    &__contacts {
+      border-right: 0;
+      border-bottom: 1px solid $nf-border;
+      max-height: 220px;
+    }
+
+    &__messages {
+      min-height: 320px;
+      max-height: 55vh;
+    }
+  }
+}
+
+// ---------- Alertes / matching ----------
+.nf-risque {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+
+  &--1 {
+    background: rgba(170, 191, 179, 0.35);
+    color: #2f5041;
+  }
+
+  &--2 {
+    background: #fbf3e4;
+    color: #8a6116;
+  }
+
+  &--3 {
+    background: $nf-danger-bg;
+    color: $nf-danger;
+  }
+}
+
+.nf-score {
+  font-weight: 600;
+  color: $nafsiti-green;
+  font-size: 13px;
+}

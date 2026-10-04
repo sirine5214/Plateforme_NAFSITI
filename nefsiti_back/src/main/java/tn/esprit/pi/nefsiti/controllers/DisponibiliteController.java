@@ -8,7 +8,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.pi.nefsiti.dto.DisponibiliteRequest;
 import tn.esprit.pi.nefsiti.dto.DisponibiliteResponse;
+import tn.esprit.pi.nefsiti.dto.TherapeuteRecommandeResponse;
 import tn.esprit.pi.nefsiti.dto.TherapeuteResponse;
+import tn.esprit.pi.nefsiti.exceptions.ApiException;
 import tn.esprit.pi.nefsiti.security.UtilisateurPrincipal;
 import tn.esprit.pi.nefsiti.services.DisponibiliteService;
 
@@ -46,6 +48,16 @@ public class DisponibiliteController {
     @GetMapping("/therapeutes")
     public List<TherapeuteResponse> therapeutes() {
         return service.therapeutes();
+    }
+
+    /** Suggestion IA ; le patient reste libre de choisir n'importe quel thérapeute de l'annuaire. */
+    @GetMapping("/therapeutes/recommandations")
+    public List<TherapeuteRecommandeResponse> recommander(@RequestParam String besoin,
+                                                          @RequestParam(defaultValue = "fr") String langue) {
+        if (besoin.isBlank() || besoin.length() > 1000) {
+            throw ApiException.badRequest("Décrivez votre besoin en quelques mots (1000 caractères au maximum)");
+        }
+        return service.recommander(besoin, langue);
     }
 
     @GetMapping("/therapeutes/{id}/disponibilites")

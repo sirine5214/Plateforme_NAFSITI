@@ -54,13 +54,31 @@ public class SecurityConfig {
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register",
+                                "/api/auth/login/visage", "/api/auth/mfa/visage").permitAll()
                         .requestMatchers("/error").permitAll()
+                        // WebSocket : authentifié par le premier message (voir TempsReelHandler)
+                        .requestMatchers("/ws").permitAll()
                         .requestMatchers("/api/utilisateurs/me", "/api/utilisateurs/me/**").authenticated()
                         .requestMatchers("/api/utilisateurs/**").hasRole(Role.ADMINISTRATEUR.name())
                         .requestMatchers("/api/disponibilites", "/api/disponibilites/**").hasRole(Role.THERAPEUTE.name())
                         .requestMatchers(HttpMethod.POST, "/api/rendez-vous").hasRole(Role.PATIENT.name())
                         .requestMatchers(HttpMethod.PATCH, "/api/rendez-vous/*/confirmer").hasRole(Role.THERAPEUTE.name())
+                        // Module 3 : journal personnel
+                        .requestMatchers("/api/journal", "/api/journal/**").hasRole(Role.PATIENT.name())
+                        // Module 4 : consultation pour tous, gestion du catalogue par l'administrateur
+                        .requestMatchers(HttpMethod.POST, "/api/ressources/*/consulter").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/ressources/*/aime").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/ressources").hasRole(Role.ADMINISTRATEUR.name())
+                        .requestMatchers(HttpMethod.PUT, "/api/ressources/*").hasRole(Role.ADMINISTRATEUR.name())
+                        .requestMatchers(HttpMethod.DELETE, "/api/ressources/*").hasRole(Role.ADMINISTRATEUR.name())
+                        // Module 5 : messagerie patient / thérapeute, revue humaine par l'administrateur
+                        .requestMatchers("/api/messages", "/api/messages/**")
+                        .hasAnyRole(Role.PATIENT.name(), Role.THERAPEUTE.name())
+                        .requestMatchers("/api/moderation/**").hasRole(Role.ADMINISTRATEUR.name())
+                        // Module 6 : alertes de détresse
+                        .requestMatchers("/api/alertes", "/api/alertes/**")
+                        .hasAnyRole(Role.THERAPEUTE.name(), Role.ADMINISTRATEUR.name())
                         .anyRequest().authenticated())
                 .exceptionHandling(e -> e
                         .authenticationEntryPoint((req, res, ex) ->

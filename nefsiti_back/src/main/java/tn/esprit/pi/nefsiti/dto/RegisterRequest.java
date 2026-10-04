@@ -9,6 +9,7 @@ public record RegisterRequest(
         @NotBlank(message = "L'email est obligatoire") @Email(message = "Email invalide") @Size(max = 150) String email,
         @NotBlank(message = "Le mot de passe est obligatoire")
         @Pattern(regexp = PasswordRules.PATTERN, message = PasswordRules.MESSAGE) String motDePasse,
-        @NotNull(message = "Le rôle est obligatoire") Role role
+        @NotNull(message = "Le rôle est obligatoire") Role role,
+        @AssertTrue(message = "Vous devez accepter le traitement de vos données pour créer un compte") boolean consentement
 ) {
 }

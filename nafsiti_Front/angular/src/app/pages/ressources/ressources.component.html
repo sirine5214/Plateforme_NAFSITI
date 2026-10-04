@@ -1,0 +1,174 @@
+<div class="nf-page">
+  <div class="nf-page-header">
+    <div>
+      <h4 class="nf-page-title">Ressources bien-être</h4>
+      <p class="nf-page-subtitle">Exercices de respiration, méditations guidées et articles validés par des professionnels.</p>
+    </div>
+    @if (estAdmin()) {
+      <button type="button" class="btn btn-primary" (click)="editer(null, formulaire)">
+        <i class="feather icon-plus me-1"></i> Ajouter une ressource
+      </button>
+    }
+  </div>
+
+  <!-- Recommandations IA -->
+  @if (recommandations(); as reco) {
+    @if (reco.ressources.length > 0) {
+      <div class="card nf-card mb-4">
+        <div class="nf-card__header d-flex align-items-center">
+          <h5><i class="feather icon-star"></i> {{ reco.personnalise ? 'Recommandé pour vous' : 'Les plus consultés' }}</h5>
+          <span class="nf-hint mb-0 ms-auto"><i class="feather icon-bell me-1"></i>Rappel conseillé : {{ libelleHeure(reco.heureRappel) }}</span>
+        </div>
+        <div class="nf-card__body">
+          <div class="nf-res-grid">
+            @for (r of reco.ressources; track r.id) {
+              <button type="button" class="nf-res nf-res--compact" (click)="ouvrir(r, detail)">
+                <span class="nf-res__type"><i class="feather {{ typeLabels[r.type].icon }}"></i>{{ typeLabels[r.type].label }}</span>
+                <strong class="nf-res__titre">{{ r.titre }}</strong>
+                @if (r.dureeMinutes) {
+                  <span class="nf-hint mb-0">{{ r.dureeMinutes }} min</span>
+                }
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  }
+
+  <div class="nf-toolbar mb-3">
+    <div class="nf-segmented" role="tablist" aria-label="Filtrer par type">
+      <button type="button" class="nf-segmented__item" [class.is-active]="filtre() === ''" (click)="filtre.set('')">Tout</button>
+      @for (t of types; track t) {
+        <button type="button" class="nf-segmented__item" [class.is-active]="filtre() === t" (click)="filtre.set(t)">
+          <i class="feather {{ typeLabels[t].icon }} me-1"></i>{{ typeLabels[t].label }}
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (erreur()) {
+    <div class="alert alert-danger nf-alert" role="alert">
+      <i class="feather icon-alert-circle"></i>
+      <span>{{ erreur() }}</span>
+      <button type="button" class="btn btn-sm btn-outline-danger ms-auto" (click)="charger()">Réessayer</button>
+    </div>
+  }
+
+  @if (chargement()) {
+    <div class="text-muted"><span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Chargement…</div>
+  } @else {
+    <div class="nf-res-grid">
+      @for (r of visibles(); track r.id) {
+        <div class="nf-res">
+          <span class="nf-res__type"><i class="feather {{ typeLabels[r.type].icon }}"></i>{{ typeLabels[r.type].label }}
+            @if (r.dureeMinutes) {
+              · {{ r.dureeMinutes }} min
+            }
+          </span>
+          <strong class="nf-res__titre">{{ r.titre }}</strong>
+          <p class="nf-res__desc">{{ r.description }}</p>
+          <div class="nf-res__footer">
+            @if (r.valideParPro) {
+              <span class="nf-res__badge" title="Contenu validé par un professionnel"><i class="feather icon-check-circle"></i> Validé</span>
+            }
+            <button type="button" class="nf-icon-btn ms-auto" [class.is-liked]="r.aime" (click)="aimer(r)"
+              [attr.aria-pressed]="r.aime" [attr.aria-label]="r.aime ? 'Retirer des favoris' : 'Ajouter aux favoris'">
+              <i class="feather icon-heart"></i>
+            </button>
+            @if (estAdmin()) {
+              <button type="button" class="nf-icon-btn" aria-label="Modifier" (click)="editer(r, formulaire)"><i class="feather icon-edit-2"></i></button>
+              <button type="button" class="nf-icon-btn" aria-label="Supprimer" (click)="supprimer(r)"><i class="feather icon-trash-2"></i></button>
+            }
+            <button type="button" class="btn btn-sm btn-primary" (click)="ouvrir(r, detail)">Ouvrir</button>
+          </div>
+        </div>
+      } @empty {
+        <div class="nf-placeholder">
+          <i class="feather icon-inbox"></i>
+          <p>Aucune ressource dans cette catégorie.</p>
+        </div>
+      }
+    </div>
+  }
+</div>
+
+<!-- Détail d'une ressource -->
+<ng-template #detail let-modal>
+  @if (ouverte(); as r) {
+    <div class="modal-header nf-modal-header">
+      <h5 class="modal-title"><i class="feather {{ typeLabels[r.type].icon }} me-2"></i>{{ r.titre }}</h5>
+      <button type="button" class="btn-close" aria-label="Fermer" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body">
+      <p class="text-muted">{{ r.description }}</p>
+      @if (r.contenu) {
+        <div class="nf-res-contenu">{{ r.contenu }}</div>
+      }
+      @if (r.url) {
+        <a [href]="r.url" target="_blank" rel="noopener" class="btn btn-light mt-3"><i class="feather icon-external-link me-1"></i> Ouvrir le média</a>
+      }
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-light" (click)="aimer(r)">
+        <i class="feather icon-heart me-1"></i>{{ r.aime ? 'Retirer des favoris' : "J'aime" }}
+      </button>
+      <button type="button" class="btn btn-primary" (click)="modal.close()">Terminé</button>
+    </div>
+  }
+</ng-template>
+
+<!-- Formulaire administrateur -->
+<ng-template #formulaire let-modal>
+  <form [formGroup]="form" (ngSubmit)="enregistrer(modal)" novalidate>
+    <div class="modal-header nf-modal-header">
+      <h5 class="modal-title">{{ enEdition() ? 'Modifier la ressource' : 'Nouvelle ressource' }}</h5>
+      <button type="button" class="btn-close" aria-label="Fermer" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body">
+      @if (erreurForm()) {
+        <div class="alert alert-danger nf-alert" role="alert"><i class="feather icon-alert-circle"></i><span>{{ erreurForm() }}</span></div>
+      }
+      <div class="row g-3">
+        <div class="col-md-8 nf-field">
+          <label for="res-titre" class="form-label">Titre</label>
+          <input id="res-titre" class="form-control" formControlName="titre" maxlength="150" />
+        </div>
+        <div class="col-md-4 nf-field">
+          <label for="res-type" class="form-label">Type</label>
+          <select id="res-type" class="form-select" formControlName="type">
+            @for (t of types; track t) {
+              <option [ngValue]="t">{{ typeLabels[t].label }}</option>
+            }
+          </select>
+        </div>
+      </div>
+      <div class="nf-field">
+        <label for="res-description" class="form-label">Description</label>
+        <textarea id="res-description" class="form-control" rows="2" formControlName="description" maxlength="500"></textarea>
+      </div>
+      <div class="nf-field">
+        <label for="res-contenu" class="form-label">Contenu / consignes</label>
+        <textarea id="res-contenu" class="form-control" rows="6" formControlName="contenu"></textarea>
+      </div>
+      <div class="row g-3">
+        <div class="col-md-4 nf-field">
+          <label for="res-duree" class="form-label">Durée (min)</label>
+          <input id="res-duree" type="number" min="1" max="240" class="form-control" formControlName="dureeMinutes" />
+        </div>
+        <div class="col-md-8 nf-field">
+          <label for="res-url" class="form-label">Lien audio / vidéo</label>
+          <input id="res-url" type="url" class="form-control" formControlName="url" placeholder="https://…" />
+        </div>
+      </div>
+      <div class="form-check form-switch nf-switch">
+        <input id="res-valide" class="form-check-input" type="checkbox" role="switch" formControlName="valideParPro" />
+        <label class="form-check-label" for="res-valide">Contenu validé par un professionnel</label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-light" (click)="modal.dismiss()">Annuler</button>
+      <button type="submit" class="btn btn-primary">Enregistrer</button>
+    </div>
+  </form>
+</ng-template>

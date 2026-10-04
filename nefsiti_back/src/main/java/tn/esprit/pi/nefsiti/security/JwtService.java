@@ -16,6 +16,9 @@ import java.util.UUID;
 @Service
 public class JwtService {
 
+    private static final String CLAIM_TYPE = "typ";
+    private static final String TYPE_MFA = "mfa";
+
     private final SecretKey key;
     private final long expirationMs;
 
@@ -37,6 +40,26 @@ public class JwtService {
                 .expiration(new Date(maintenant.getTime() + expirationMs))
                 .signWith(key)
                 .compact();
+    }
+
+    /**
+     * Jeton intermédiaire délivré quand l'IA exige une vérification faciale :
+     * il ne donne accès à aucune route (refusé par JwtAuthenticationFilter).
+     */
+    public String genererMfa(Utilisateur u, long dureeMs) {
+        Date maintenant = new Date();
+        return Jwts.builder()
+                .id(UUID.randomUUID().toString())
+                .subject(String.valueOf(u.getId()))
+                .claim(CLAIM_TYPE, TYPE_MFA)
+                .issuedAt(maintenant)
+                .expiration(new Date(maintenant.getTime() + dureeMs))
+                .signWith(key)
+                .compact();
+    }
+
+    public static boolean estMfa(Claims claims) {
+        return TYPE_MFA.equals(claims.get(CLAIM_TYPE, String.class));
     }
 
     /** @throws JwtException si le token est invalide, falsifié ou expiré. */

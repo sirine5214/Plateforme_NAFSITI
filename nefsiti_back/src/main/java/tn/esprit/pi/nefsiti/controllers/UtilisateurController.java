@@ -36,6 +36,32 @@ public class UtilisateurController {
         return ResponseEntity.noContent().build();
     }
 
+    /** Thérapeute : spécialités, approche et langues utilisées par le matching IA. */
+    @PutMapping("/me/profil-therapeute")
+    public UtilisateurResponse modifierProfilTherapeute(@AuthenticationPrincipal UtilisateurPrincipal principal,
+                                                        @Valid @RequestBody ProfilTherapeuteRequest req) {
+        return service.modifierProfilTherapeute(principal.id(), req);
+    }
+
+    @PutMapping("/me/consentements")
+    public UtilisateurResponse modifierConsentements(@AuthenticationPrincipal UtilisateurPrincipal principal,
+                                                     @RequestBody ConsentementsRequest req) {
+        return service.modifierConsentements(principal.id(), req);
+    }
+
+    /** RGPD : export de ses données personnelles. */
+    @GetMapping("/me/export")
+    public ExportDonneesResponse exporter(@AuthenticationPrincipal UtilisateurPrincipal principal) {
+        return service.exporter(principal.id());
+    }
+
+    /** RGPD : droit à l'effacement. */
+    @DeleteMapping("/me")
+    public ResponseEntity<Void> supprimerMonCompte(@AuthenticationPrincipal UtilisateurPrincipal principal) {
+        service.supprimerMonCompte(principal.id());
+        return ResponseEntity.noContent().build();
+    }
+
     // ===== Administration =====
 
     @GetMapping

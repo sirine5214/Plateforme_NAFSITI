@@ -13,10 +13,16 @@ public record UtilisateurResponse(
         String email,
         Role role,
         boolean actif,
-        LocalDateTime dateCreation
+        LocalDateTime dateCreation,
+        LocalDateTime dateConsentement,
+        boolean partageAlertes,
+        String specialites,
+        String approche,
+        String langues
 ) {
     public static UtilisateurResponse from(Utilisateur u) {
         return new UtilisateurResponse(u.getId(), u.getNom(), u.getPrenom(), u.getEmail(),
-                u.getRole(), u.isActif(), u.getDateCreation());
+                u.getRole(), u.isActif(), u.getDateCreation(), u.getDateConsentement(), u.isPartageAlertes(),
+                u.getSpecialites(), u.getApproche(), u.getLangues());
     }
 }

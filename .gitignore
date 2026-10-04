@@ -9,6 +9,12 @@ nefsiti_back/target/
 *.iml
 .vscode/
 
+# ===== Service IA (Python) =====
+nafsiti_ia/.venv/
+nafsiti_ia/models/*.joblib
+__pycache__/
+*.pyc
+
 # ===== Frontend (Angular) =====
 node_modules/
 .angular/

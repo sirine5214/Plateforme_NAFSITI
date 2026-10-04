@@ -46,7 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } catch (JwtException | IllegalArgumentException e) {
             return; // token invalide : la requête reste anonyme -> 401 si la route est protégée
         }
-        if (blacklist.estRevoque(claims.getId())) {
+        if (blacklist.estRevoque(claims.getId()) || JwtService.estMfa(claims)) {
             return;
         }
         Long id;

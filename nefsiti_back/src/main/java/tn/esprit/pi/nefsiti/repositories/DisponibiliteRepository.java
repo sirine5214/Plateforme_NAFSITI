@@ -17,6 +17,8 @@ public interface DisponibiliteRepository extends JpaRepository<Disponibilite, Lo
 
     long countByTherapeuteIdAndReserveFalseAndDebutAfter(Long therapeuteId, LocalDateTime apres);
 
+    long countByTherapeuteIdAndReserveFalseAndDebutBetween(Long therapeuteId, LocalDateTime debut, LocalDateTime fin);
+
     @Query("""
             select count(d) > 0 from Disponibilite d
             where d.therapeute.id = :therapeuteId and d.debut < :fin and d.fin > :debut

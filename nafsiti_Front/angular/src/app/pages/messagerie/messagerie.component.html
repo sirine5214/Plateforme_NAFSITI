@@ -1,0 +1,104 @@
+<div class="nf-page">
+  <div class="nf-page-header">
+    <div>
+      <h4 class="nf-page-title">Messagerie</h4>
+      <p class="nf-page-subtitle">Échangez en toute confidentialité avec {{ moi()?.role === 'THERAPEUTE' ? 'vos patients' : 'vos thérapeutes' }}.</p>
+    </div>
+    <span class="nf-statut" [class.nf-statut--confirme]="enLigne()" [class.nf-statut--annule]="!enLigne()">
+      {{ enLigne() ? 'Temps réel actif' : 'Hors ligne' }}
+    </span>
+  </div>
+
+  <div class="card nf-card nf-chat">
+    <!-- Contacts -->
+    <aside class="nf-chat__contacts" aria-label="Conversations">
+      @if (chargement()) {
+        <div class="p-3 text-muted"><span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Chargement…</div>
+      } @else {
+        @for (c of contacts(); track c.personne.id) {
+          <button type="button" class="nf-pick nf-chat__contact" [class.is-active]="contact()?.personne?.id === c.personne.id" (click)="ouvrir(c)">
+            <span class="nf-avatar" [class.nf-avatar--therapeute]="c.role === 'THERAPEUTE'">{{ initiales(c.personne) }}</span>
+            <span class="nf-pick__text">
+              <span class="nf-pick__name">{{ c.personne.prenom }} {{ c.personne.nom }}</span>
+              <span class="nf-pick__meta">{{ c.role === 'THERAPEUTE' ? 'Thérapeute' : 'Patient' }}</span>
+            </span>
+            @if (c.nonLus > 0) {
+              <span class="nf-chat__badge" [attr.aria-label]="c.nonLus + ' message(s) non lu(s)'">{{ c.nonLus }}</span>
+            }
+          </button>
+        } @empty {
+          <div class="nf-placeholder p-3">
+            <i class="feather icon-message-circle"></i>
+            <p>La messagerie s'ouvre dès qu'un rendez-vous est pris entre un patient et un thérapeute.</p>
+          </div>
+        }
+      }
+    </aside>
+
+    <!-- Conversation -->
+    <section class="nf-chat__thread">
+      @if (contact(); as c) {
+        <header class="nf-chat__header">
+          <strong>{{ c.personne.prenom }} {{ c.personne.nom }}</strong>
+        </header>
+
+        <div class="nf-chat__messages" #fil aria-live="polite">
+          @if (chargementFil()) {
+            <div class="text-muted"><span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Chargement…</div>
+          }
+          @for (m of messages(); track m.id) {
+            <div class="nf-bulle" [class.nf-bulle--moi]="estAMoi(m)" [class.is-masque]="m.statut !== 'PUBLIE'">
+              <p>{{ m.contenu }}</p>
+              <span class="nf-bulle__meta">
+                {{ m.dateEnvoi | date: 'dd/MM HH:mm' }}
+                @if (m.statut === 'MASQUE') {
+                  · en attente de relecture
+                } @else if (m.statut === 'REJETE') {
+                  · non transmis
+                } @else if (estAMoi(m) && m.lu) {
+                  · lu
+                }
+              </span>
+            </div>
+          } @empty {
+            @if (!chargementFil()) {
+              <p class="text-muted text-center my-4">Aucun message pour l'instant. Écrivez le premier !</p>
+            }
+          }
+        </div>
+
+        @if (urgence()) {
+          <div class="px-3 pt-3"><app-urgence [critique]="true" /></div>
+        }
+        @if (info()) {
+          <div class="alert alert-info nf-alert mx-3 mt-3 mb-0" role="status"><i class="feather icon-info"></i><span>{{ info() }}</span></div>
+        }
+        @if (erreur()) {
+          <div class="alert alert-danger nf-alert mx-3 mt-3 mb-0" role="alert"><i class="feather icon-alert-circle"></i><span>{{ erreur() }}</span></div>
+        }
+
+        <form class="nf-chat__composer" [formGroup]="form" (ngSubmit)="envoyer()">
+          <label for="chat-message" class="visually-hidden">Votre message</label>
+          <textarea id="chat-message" class="form-control" rows="2" formControlName="contenu" maxlength="2000"
+            placeholder="Votre message… (Entrée pour envoyer)" (keydown)="touche($event)"></textarea>
+          <button type="submit" class="btn btn-primary" [disabled]="envoi() || form.invalid" aria-label="Envoyer">
+            @if (envoi()) {
+              <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+            } @else {
+              <i class="feather icon-send"></i>
+            }
+          </button>
+        </form>
+      } @else {
+        <div class="nf-placeholder m-auto">
+          <i class="feather icon-message-square"></i>
+          <p>Sélectionnez une conversation.</p>
+        </div>
+      }
+    </section>
+  </div>
+
+  <p class="nf-hint mt-3 mb-0">
+    <i class="feather icon-shield me-1"></i>Messages chiffrés et modérés automatiquement. En cas d'urgence, appelez le 3114, le 15 ou le 112.
+  </p>
+</div>

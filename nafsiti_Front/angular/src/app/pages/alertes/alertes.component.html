@@ -1,0 +1,96 @@
+<div class="nf-page">
+  <div class="nf-page-header">
+    <div>
+      <h4 class="nf-page-title">Alertes de détresse</h4>
+      <p class="nf-page-subtitle">
+        Signaux détectés automatiquement dans les journaux et messages. Ils ne constituent pas un diagnostic : contactez le patient.
+      </p>
+    </div>
+    <span class="nf-statut" [class.nf-statut--annule]="aTraiter() > 0" [class.nf-statut--confirme]="aTraiter() === 0">
+      {{ aTraiter() }} à traiter
+    </span>
+  </div>
+
+  @if (erreur()) {
+    <div class="alert alert-danger nf-alert" role="alert">
+      <i class="feather icon-alert-circle"></i>
+      <span>{{ erreur() }}</span>
+      <button type="button" class="btn btn-sm btn-outline-danger ms-auto" (click)="charger()">Réessayer</button>
+    </div>
+  }
+
+  <div class="card nf-card">
+    <div class="table-responsive">
+      <table class="table nf-table mb-0">
+        <thead>
+          <tr>
+            <th scope="col">Patient</th>
+            <th scope="col">Niveau</th>
+            <th scope="col">Source</th>
+            <th scope="col">Détectée le</th>
+            <th scope="col">Statut</th>
+            <th scope="col" class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (chargement()) {
+            <tr><td colspan="6" class="text-muted"><span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Chargement…</td></tr>
+          } @else {
+            @for (a of alertes(); track a.id) {
+              <tr [class.is-inactive]="a.traitee">
+                <td>
+                  <div class="nf-user-cell">
+                    <span class="nf-avatar">{{ initiales(a.patient) }}</span>
+                    <div>
+                      <strong>{{ a.patient.prenom }} {{ a.patient.nom }}</strong>
+                      <div class="text-muted small">{{ a.patient.email }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="nf-risque nf-risque--{{ a.niveau }}">{{ niveaux[a.niveau] }}</span>
+                  @if (a.probabilite != null) {
+                    <div class="text-muted small">probabilité {{ a.probabilite | percent }}</div>
+                  } @else if (a.origineDecision === 'regle') {
+                    <div class="text-muted small">expression explicite</div>
+                  }
+                </td>
+                <td>{{ a.source === 'JOURNAL' ? 'Journal' : 'Message' }}</td>
+                <td>{{ a.dateCreation | date: 'dd/MM/yyyy HH:mm' }}</td>
+                <td>
+                  @if (a.traitee) {
+                    <span class="nf-statut nf-statut--confirme">Traitée</span>
+                    @if (a.traiteePar) {
+                      <div class="text-muted small">par {{ a.traiteePar.prenom }} {{ a.traiteePar.nom }}</div>
+                    }
+                  } @else {
+                    <span class="nf-statut nf-statut--annule">À traiter</span>
+                  }
+                </td>
+                <td class="text-end text-nowrap">
+                  @if (estTherapeute()) {
+                    <a class="btn btn-sm btn-light me-1" routerLink="/messagerie" [queryParams]="{ contact: a.patient.id }">
+                      <i class="feather icon-message-circle"></i> Contacter
+                    </a>
+                  }
+                  @if (!a.traitee) {
+                    <button type="button" class="btn btn-sm btn-primary" [disabled]="enCours() === a.id" (click)="traiter(a)">Marquer traitée</button>
+                  }
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="6">
+                  <div class="nf-placeholder">
+                    <i class="feather icon-check-circle"></i>
+                    <p>Aucune alerte. {{ estTherapeute() ? 'Seuls les patients ayant consenti au partage apparaissent ici.' : '' }}</p>
+                  </div>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

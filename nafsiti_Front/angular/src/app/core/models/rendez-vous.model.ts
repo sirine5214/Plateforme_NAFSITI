@@ -15,6 +15,16 @@ export interface PersonneResume {
 
 export interface Therapeute extends PersonneResume {
   creneauxLibres: number;
+  specialites: string | null;
+  approche: string | null;
+  langues: string | null;
+}
+
+/** Suggestion du matching IA (score 0-1) : le patient garde le libre choix. */
+export interface TherapeuteRecommande {
+  therapeute: Therapeute;
+  score: number;
+  similarite: number;
 }
 
 /** Créneau proposé par un thérapeute (dates ISO locales, ex. 2026-09-25T10:00:00). */

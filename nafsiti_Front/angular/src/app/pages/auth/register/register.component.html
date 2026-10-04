@@ -96,6 +96,22 @@
           }
         </div>
 
+        <!-- Consentement RGPD explicite -->
+        <div class="nf-field">
+          <div class="form-check nf-consent">
+            <input id="consentement" type="checkbox" class="form-check-input" formControlName="consentement"
+              [class.is-invalid]="invalide('consentement')" />
+            <label for="consentement" class="form-check-label">
+              J'accepte que Nafsiti traite mes données, y compris des données de santé (journal d'humeur, messages),
+              pour m'accompagner. Elles sont chiffrées, jamais vendues, et je peux les exporter ou les supprimer à tout
+              moment depuis mon profil. Nafsiti ne pose pas de diagnostic et ne remplace pas les urgences (3114, 15, 112).
+            </label>
+          </div>
+          @if (invalide('consentement')) {
+            <div class="nf-error">Votre consentement est nécessaire pour créer un compte</div>
+          }
+        </div>
+
         <button type="submit" class="btn btn-primary nf-btn-block" [disabled]="chargement()">
           @if (chargement()) {
             <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>

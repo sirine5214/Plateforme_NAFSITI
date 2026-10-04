@@ -5,3 +5,8 @@ spring.datasource.username=postgres
 spring.datasource.password=votre_mot_de_passe
 # Generer une cle : openssl rand -base64 48
 app.jwt.secret=remplacer_par_une_cle_base64_d_au_moins_32_octets
+# Generer une cle : openssl rand -base64 32
+app.chiffrement.cle=remplacer_par_une_cle_base64_de_32_octets
+# Service IA Python
+app.ia.url=http://localhost:8000
+app.ia.api-key=meme_valeur_que_NAFSITI_IA_API_KEY

@@ -39,6 +39,49 @@ export const NavigationItems: NavigationItem[] = [
     ]
   },
   {
+    id: 'bien-etre',
+    title: 'Bien-être',
+    type: 'group',
+    icon: 'icon-group',
+    children: [
+      {
+        id: 'journal',
+        title: 'Mon journal',
+        type: 'item',
+        url: '/journal',
+        classes: 'nav-item',
+        icon: 'feather icon-edit-3',
+        roles: ['PATIENT']
+      },
+      {
+        id: 'ressources',
+        title: 'Ressources',
+        type: 'item',
+        url: '/ressources',
+        classes: 'nav-item',
+        icon: 'feather icon-wind'
+      },
+      {
+        id: 'messagerie',
+        title: 'Messagerie',
+        type: 'item',
+        url: '/messagerie',
+        classes: 'nav-item',
+        icon: 'feather icon-message-circle',
+        roles: ['PATIENT', 'THERAPEUTE']
+      },
+      {
+        id: 'alertes',
+        title: 'Alertes de détresse',
+        type: 'item',
+        url: '/alertes',
+        classes: 'nav-item',
+        icon: 'feather icon-alert-triangle',
+        roles: ['THERAPEUTE', 'ADMINISTRATEUR']
+      }
+    ]
+  },
+  {
     id: 'rendez-vous-groupe',
     title: 'Rendez-vous',
     type: 'group',
@@ -98,6 +141,14 @@ export const NavigationItems: NavigationItem[] = [
         url: '/utilisateurs',
         classes: 'nav-item',
         icon: 'feather icon-users'
+      },
+      {
+        id: 'moderation',
+        title: 'Modération des messages',
+        type: 'item',
+        url: '/moderation',
+        classes: 'nav-item',
+        icon: 'feather icon-shield'
       }
     ]
   },

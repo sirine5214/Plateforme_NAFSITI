@@ -6,10 +6,12 @@ import { environment } from 'src/environments/environment';
 import {
   ChangementMotDePasseRequest,
   ProfilRequest,
+  ProfilTherapeuteRequest,
   Utilisateur,
   UtilisateurFiltres,
   UtilisateurRequest,
-  UtilisateurStats
+  UtilisateurStats,
+  VisageStatut
 } from '../models/utilisateur.model';
 
 @Injectable({ providedIn: 'root' })
@@ -55,5 +57,37 @@ export class UtilisateurService {
 
   changerMotDePasse(req: ChangementMotDePasseRequest): Observable<void> {
     return this.http.put<void>(`${this.api}/me/mot-de-passe`, req);
+  }
+
+  modifierProfilTherapeute(req: ProfilTherapeuteRequest): Observable<Utilisateur> {
+    return this.http.put<Utilisateur>(`${this.api}/me/profil-therapeute`, req);
+  }
+
+  modifierConsentements(partageAlertes: boolean): Observable<Utilisateur> {
+    return this.http.put<Utilisateur>(`${this.api}/me/consentements`, { partageAlertes });
+  }
+
+  // ===== RGPD =====
+
+  exporterMesDonnees(): Observable<unknown> {
+    return this.http.get<unknown>(`${this.api}/me/export`);
+  }
+
+  supprimerMonCompte(): Observable<void> {
+    return this.http.delete<void>(`${this.api}/me`);
+  }
+
+  // ===== Reconnaissance faciale =====
+
+  statutVisage(): Observable<VisageStatut> {
+    return this.http.get<VisageStatut>(`${this.api}/me/visage`);
+  }
+
+  enregistrerVisage(images: string[]): Observable<VisageStatut> {
+    return this.http.post<VisageStatut>(`${this.api}/me/visage`, { images });
+  }
+
+  supprimerVisage(): Observable<void> {
+    return this.http.delete<void>(`${this.api}/me/visage`);
   }
 }

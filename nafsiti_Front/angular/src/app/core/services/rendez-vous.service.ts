@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { environment } from 'src/environments/environment';
@@ -8,7 +8,8 @@ import {
   DisponibiliteRequest,
   RendezVous,
   RendezVousRequest,
-  Therapeute
+  Therapeute,
+  TherapeuteRecommande
 } from '../models/rendez-vous.model';
 
 @Injectable({ providedIn: 'root' })
@@ -39,6 +40,12 @@ export class RendezVousService {
 
   therapeutes(): Observable<Therapeute[]> {
     return this.http.get<Therapeute[]>(`${this.api}/therapeutes`);
+  }
+
+  /** Matching IA : thérapeutes les plus adaptés au besoin exprimé en texte libre. */
+  recommanderTherapeutes(besoin: string, langue = 'fr'): Observable<TherapeuteRecommande[]> {
+    const params = new HttpParams().set('besoin', besoin).set('langue', langue);
+    return this.http.get<TherapeuteRecommande[]>(`${this.api}/therapeutes/recommandations`, { params });
   }
 
   creneauxLibres(therapeuteId: number): Observable<Disponibilite[]> {

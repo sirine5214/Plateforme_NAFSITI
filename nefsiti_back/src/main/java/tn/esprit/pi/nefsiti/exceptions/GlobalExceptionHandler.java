@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import tn.esprit.pi.nefsiti.dto.ApiError;
+import tn.esprit.pi.nefsiti.ia.IaIndisponibleException;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -63,6 +64,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(OptimisticLockingFailureException.class)
     public ResponseEntity<ApiError> handleConcurrence(OptimisticLockingFailureException ex) {
         return build(HttpStatus.CONFLICT, "Ce créneau vient d'être modifié par quelqu'un d'autre. Actualisez et réessayez.");
+    }
+
+    @ExceptionHandler(IaIndisponibleException.class)
+    public ResponseEntity<ApiError> handleIa(IaIndisponibleException ex) {
+        log.warn("Service IA indisponible : {}", ex.getMessage());
+        return build(HttpStatus.SERVICE_UNAVAILABLE, "Le service d'intelligence artificielle est momentanément indisponible");
     }
 
     @ExceptionHandler(Exception.class)

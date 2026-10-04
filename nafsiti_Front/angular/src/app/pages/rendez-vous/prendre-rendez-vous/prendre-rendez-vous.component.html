@@ -16,6 +16,58 @@
     </div>
   }
 
+  <!-- Suggestion IA -->
+  <div class="card nf-card mb-4">
+    <div class="nf-card__header">
+      <h5><i class="feather icon-compass"></i> Trouver le thérapeute adapté</h5>
+    </div>
+    <div class="nf-card__body">
+      <form class="row g-3 align-items-end" [formGroup]="besoinForm" (ngSubmit)="suggerer()" novalidate>
+        <div class="col-md-8">
+          <label for="besoin" class="form-label">Décrivez votre besoin en quelques mots</label>
+          <input id="besoin" type="text" class="form-control" formControlName="besoin" maxlength="1000"
+            placeholder="Ex. anxiété au travail, troubles du sommeil" />
+        </div>
+        <div class="col-6 col-md-2">
+          <label for="langue" class="form-label">Langue</label>
+          <select id="langue" class="form-select" formControlName="langue">
+            <option value="fr">Français</option>
+            <option value="ar">Arabe</option>
+            <option value="en">Anglais</option>
+          </select>
+        </div>
+        <div class="col-6 col-md-2">
+          <button type="submit" class="btn btn-primary w-100" [disabled]="rechercheSuggestions()">
+            @if (rechercheSuggestions()) {
+              <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
+            }
+            Suggérer
+          </button>
+        </div>
+      </form>
+      @if (erreurSuggestions()) {
+        <div class="alert alert-warning nf-alert mt-3 mb-0" role="alert"><i class="feather icon-info"></i><span>{{ erreurSuggestions() }}</span></div>
+      }
+      @if (suggestions(); as liste) {
+        <div class="nf-pick-list mt-3">
+          @for (s of liste; track s.therapeute.id) {
+            <button type="button" class="nf-pick" [class.is-active]="therapeute()?.id === s.therapeute.id" (click)="choisirSuggestion(s)">
+              <span class="nf-avatar nf-avatar--therapeute">{{ initiales(s.therapeute) }}</span>
+              <span class="nf-pick__text">
+                <span class="nf-pick__name">{{ s.therapeute.prenom }} {{ s.therapeute.nom }}</span>
+                <span class="nf-pick__meta">{{ s.therapeute.specialites || 'Spécialités non renseignées' }}</span>
+              </span>
+              <span class="nf-score" title="Compatibilité estimée">{{ s.score | percent: '1.0-0' }}</span>
+            </button>
+          } @empty {
+            <p class="text-muted mb-0">Aucun thérapeute disponible pour le moment.</p>
+          }
+        </div>
+        <p class="nf-hint mt-2 mb-0">Suggestion indicative : vous restez libre de choisir n'importe quel thérapeute ci-dessous.</p>
+      }
+    </div>
+  </div>
+
   <div class="row g-4">
     <!-- 1. Thérapeutes -->
     <div class="col-lg-4">
@@ -33,6 +85,9 @@
                 <span class="nf-avatar nf-avatar--therapeute">{{ initiales(t) }}</span>
                 <span class="nf-pick__text">
                   <span class="nf-pick__name">{{ t.prenom }} {{ t.nom }}</span>
+                  @if (t.specialites) {
+                    <span class="nf-pick__meta">{{ t.specialites }}</span>
+                  }
                   <span class="nf-pick__meta">
                     {{ t.creneauxLibres === 0 ? 'Aucun créneau libre' : t.creneauxLibres + ' créneau' + (t.creneauxLibres > 1 ? 'x' : '') + ' libre' + (t.creneauxLibres > 1 ? 's' : '') }}
                   </span>

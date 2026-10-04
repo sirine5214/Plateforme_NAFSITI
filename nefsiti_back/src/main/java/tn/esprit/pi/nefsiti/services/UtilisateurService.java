@@ -8,14 +8,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tn.esprit.pi.nefsiti.dto.*;
-import tn.esprit.pi.nefsiti.entities.Role;
-import tn.esprit.pi.nefsiti.entities.StatutRendezVous;
-import tn.esprit.pi.nefsiti.entities.Utilisateur;
+import tn.esprit.pi.nefsiti.entities.*;
 import tn.esprit.pi.nefsiti.exceptions.ApiException;
-import tn.esprit.pi.nefsiti.repositories.DisponibiliteRepository;
-import tn.esprit.pi.nefsiti.repositories.RendezVousRepository;
-import tn.esprit.pi.nefsiti.repositories.UtilisateurRepository;
+import tn.esprit.pi.nefsiti.repositories.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +26,12 @@ public class UtilisateurService {
     private final PasswordEncoder passwordEncoder;
     private final RendezVousRepository rendezVousRepository;
     private final DisponibiliteRepository disponibiliteRepository;
+    private final EntreeJournalRepository journalRepository;
+    private final MessageRepository messageRepository;
+    private final AlerteRisqueRepository alerteRepository;
+    private final EmpreinteFacialeRepository empreinteRepository;
+    private final TentativeConnexionRepository tentativeRepository;
+    private final InteractionRessourceRepository interactionRepository;
 
     // ===== Administration =====
 
@@ -132,11 +135,22 @@ public class UtilisateurService {
         if (id.equals(adminId)) {
             throw ApiException.badRequest("Vous ne pouvez pas supprimer votre propre compte");
         }
-        Utilisateur u = charger(id);
-        // Rendez-vous et créneaux liés, sinon violation de clé étrangère
+        effacer(charger(id));
+    }
+
+    /** Toutes les données liées à l'utilisateur, puis le compte (sinon violation de clé étrangère). */
+    private void effacer(Utilisateur u) {
+        Long id = u.getId();
         rendezVousRepository.libererCreneauxDuPatient(id, StatutRendezVous.ANNULE);
         rendezVousRepository.supprimerParUtilisateur(id);
         disponibiliteRepository.supprimerParTherapeute(id);
+        journalRepository.supprimerParPatient(id);
+        messageRepository.supprimerParUtilisateur(id);
+        alerteRepository.supprimerParPatient(id);
+        alerteRepository.detacherTraitant(id);
+        empreinteRepository.supprimerParUtilisateur(id);
+        tentativeRepository.supprimerParUtilisateur(id);
+        interactionRepository.supprimerParUtilisateur(id);
         repository.delete(u);
     }
 
@@ -165,6 +179,67 @@ public class UtilisateurService {
             throw ApiException.badRequest("Le nouveau mot de passe doit être différent de l'ancien");
         }
         u.setMotDePasse(passwordEncoder.encode(req.nouveauMotDePasse()));
+    }
+
+    @Transactional
+    public UtilisateurResponse modifierProfilTherapeute(Long id, ProfilTherapeuteRequest req) {
+        Utilisateur u = charger(id);
+        if (u.getRole() != Role.THERAPEUTE) {
+            throw ApiException.badRequest("Seul un thérapeute peut renseigner un profil professionnel");
+        }
+        u.setSpecialites(vide(req.specialites()));
+        u.setApproche(vide(req.approche()));
+        u.setLangues(req.langues() == null || req.langues().isBlank() ? null
+                : req.langues().replaceAll("\\s", "").toLowerCase());
+        return UtilisateurResponse.from(u);
+    }
+
+    @Transactional
+    public UtilisateurResponse modifierConsentements(Long id, ConsentementsRequest req) {
+        Utilisateur u = charger(id);
+        u.setPartageAlertes(req.partageAlertes());
+        return UtilisateurResponse.from(u);
+    }
+
+    // ===== RGPD =====
+
+    /** Droit d'accès et de portabilité : export JSON des données personnelles. */
+    @Transactional(readOnly = true)
+    public ExportDonneesResponse exporter(Long id) {
+        Utilisateur u = charger(id);
+        List<RendezVous> rdv = u.getRole() == Role.THERAPEUTE
+                ? rendezVousRepository.findByTherapeuteIdOrderByDateHeureDesc(id)
+                : rendezVousRepository.findByPatientIdOrderByDateHeureDesc(id);
+        List<MessageResponse> messages = rendezVousContacts(u).stream()
+                .flatMap(autre -> messageRepository.conversation(id, autre, StatutMessage.PUBLIE).stream())
+                .map(MessageResponse::from)
+                .toList();
+        return new ExportDonneesResponse(LocalDateTime.now(), UtilisateurResponse.from(u),
+                empreinteRepository.existsByUtilisateurId(id),
+                journalRepository.findByPatientIdOrderByDateCreationDesc(id).stream().map(JournalResponse::from).toList(),
+                rdv.stream().map(RendezVousResponse::from).toList(),
+                messages);
+    }
+
+    /** Droit à l'effacement : suppression définitive du compte et de toutes ses données. */
+    @Transactional
+    public void supprimerMonCompte(Long id) {
+        Utilisateur u = charger(id);
+        if (u.getRole() == Role.ADMINISTRATEUR) {
+            throw ApiException.badRequest("Un administrateur ne peut pas supprimer son propre compte");
+        }
+        effacer(u);
+    }
+
+    private List<Long> rendezVousContacts(Utilisateur u) {
+        List<Utilisateur> contacts = u.getRole() == Role.THERAPEUTE
+                ? rendezVousRepository.patientsDuTherapeute(u.getId(), StatutRendezVous.ANNULE)
+                : rendezVousRepository.therapeutesDuPatient(u.getId(), StatutRendezVous.ANNULE);
+        return contacts.stream().map(Utilisateur::getId).toList();
+    }
+
+    private static String vide(String s) {
+        return s == null || s.isBlank() ? null : s.trim();
     }
 
     private Utilisateur charger(Long id) {

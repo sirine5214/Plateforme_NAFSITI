@@ -4,62 +4,111 @@
   <main class="nf-auth-panel">
     <div class="nf-auth-card">
       <img src="assets/images/logo-dark.png" alt="Nafsiti" class="nf-auth-card__logo-mobile" />
-      <h1 class="nf-auth-card__title">Bon retour parmi nous</h1>
-      <p class="nf-auth-card__subtitle">Connectez-vous pour retrouver votre espace bien-être.</p>
 
-      @if (erreur()) {
-        <div class="alert alert-danger nf-alert" role="alert">
-          <i class="feather icon-alert-circle"></i>
-          <span>{{ erreur() }}</span>
-        </div>
-      }
+      @if (mfaToken()) {
+        <!-- Second facteur : connexion jugée inhabituelle par l'IA -->
+        <h1 class="nf-auth-card__title">Vérification de sécurité</h1>
+        <p class="nf-auth-card__subtitle">
+          Cette connexion est inhabituelle (nouvel appareil ou horaire). Confirmez votre identité avec votre visage.
+        </p>
 
-      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
-        <div class="nf-field">
-          <label for="email" class="form-label">Adresse email</label>
-          <div class="nf-input-icon">
-            <i class="feather icon-mail"></i>
-            <input id="email" type="email" class="form-control" formControlName="email" placeholder="vous@exemple.com"
-              autocomplete="email" [class.is-invalid]="invalide('email')" />
+        @if (erreur()) {
+          <div class="alert alert-danger nf-alert" role="alert">
+            <i class="feather icon-alert-circle"></i>
+            <span>{{ erreur() }}</span>
           </div>
-          @if (invalide('email')) {
-            <div class="nf-error">
-              {{ form.controls.email.hasError('required') ? "L'email est obligatoire" : 'Adresse email invalide' }}
+        }
+
+        <app-camera-capture libelle="Vérifier mon visage" [desactive]="chargement()" (captures)="validerMfa($event)" />
+        @if (chargement()) {
+          <p class="nf-hint mt-2 mb-0"><span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Analyse en cours…</p>
+        }
+        <p class="nf-auth-card__footer">
+          <button type="button" class="btn btn-link p-0" (click)="annulerMfa()">Revenir à la connexion</button>
+        </p>
+      } @else {
+        <h1 class="nf-auth-card__title">Bon retour parmi nous</h1>
+        <p class="nf-auth-card__subtitle">Connectez-vous pour retrouver votre espace bien-être.</p>
+
+        <!-- Choix de la méthode d'authentification -->
+        <div class="nf-segmented nf-segmented--block mb-4" role="tablist" aria-label="Méthode de connexion">
+          <button type="button" role="tab" class="nf-segmented__item" [class.is-active]="mode() === 'mot-de-passe'"
+            [attr.aria-selected]="mode() === 'mot-de-passe'" (click)="changerMode('mot-de-passe')">
+            <i class="feather icon-lock me-1"></i> Mot de passe
+          </button>
+          <button type="button" role="tab" class="nf-segmented__item" [class.is-active]="mode() === 'visage'"
+            [attr.aria-selected]="mode() === 'visage'" (click)="changerMode('visage')">
+            <i class="feather icon-camera me-1"></i> Reconnaissance faciale
+          </button>
+        </div>
+
+        @if (erreur()) {
+          <div class="alert alert-danger nf-alert" role="alert">
+            <i class="feather icon-alert-circle"></i>
+            <span>{{ erreur() }}</span>
+          </div>
+        }
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+          <div class="nf-field">
+            <label for="email" class="form-label">Adresse email</label>
+            <div class="nf-input-icon">
+              <i class="feather icon-mail"></i>
+              <input id="email" type="email" class="form-control" formControlName="email" placeholder="vous@exemple.com"
+                autocomplete="email" [class.is-invalid]="invalide('email')" />
             </div>
-          }
-        </div>
-
-        <div class="nf-field">
-          <label for="motDePasse" class="form-label">Mot de passe</label>
-          <div class="nf-input-icon">
-            <i class="feather icon-lock"></i>
-            <input id="motDePasse" [type]="afficherMotDePasse() ? 'text' : 'password'" class="form-control"
-              formControlName="motDePasse" placeholder="Votre mot de passe" autocomplete="current-password"
-              [class.is-invalid]="invalide('motDePasse')" />
-            <button type="button" class="nf-input-toggle" (click)="afficherMotDePasse.set(!afficherMotDePasse())"
-              [attr.aria-label]="afficherMotDePasse() ? 'Masquer le mot de passe' : 'Afficher le mot de passe'">
-              <i class="feather" [class.icon-eye]="!afficherMotDePasse()" [class.icon-eye-off]="afficherMotDePasse()"></i>
-            </button>
+            @if (invalide('email')) {
+              <div class="nf-error">
+                {{ form.controls.email.hasError('required') ? "L'email est obligatoire" : 'Adresse email invalide' }}
+              </div>
+            }
           </div>
-          @if (invalide('motDePasse')) {
-            <div class="nf-error">Le mot de passe est obligatoire</div>
-          }
-        </div>
 
-        <button type="submit" class="btn btn-primary nf-btn-block" [disabled]="chargement()">
+          @if (mode() === 'mot-de-passe') {
+            <div class="nf-field">
+              <label for="motDePasse" class="form-label">Mot de passe</label>
+              <div class="nf-input-icon">
+                <i class="feather icon-lock"></i>
+                <input id="motDePasse" [type]="afficherMotDePasse() ? 'text' : 'password'" class="form-control"
+                  formControlName="motDePasse" placeholder="Votre mot de passe" autocomplete="current-password"
+                  [class.is-invalid]="invalide('motDePasse')" />
+                <button type="button" class="nf-input-toggle" (click)="afficherMotDePasse.set(!afficherMotDePasse())"
+                  [attr.aria-label]="afficherMotDePasse() ? 'Masquer le mot de passe' : 'Afficher le mot de passe'">
+                  <i class="feather" [class.icon-eye]="!afficherMotDePasse()" [class.icon-eye-off]="afficherMotDePasse()"></i>
+                </button>
+              </div>
+              @if (invalide('motDePasse')) {
+                <div class="nf-error">Le mot de passe est obligatoire</div>
+              }
+            </div>
+
+            <button type="submit" class="btn btn-primary nf-btn-block" [disabled]="chargement()">
+              @if (chargement()) {
+                <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+                Connexion…
+              } @else {
+                Se connecter
+              }
+            </button>
+          }
+        </form>
+
+        @if (mode() === 'visage') {
+          <app-camera-capture libelle="Me connecter avec mon visage" [desactive]="chargement()" (captures)="connexionVisage($event)" />
           @if (chargement()) {
-            <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
-            Connexion…
-          } @else {
-            Se connecter
+            <p class="nf-hint mt-2 mb-0"><span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Reconnaissance en cours…</p>
           }
-        </button>
-      </form>
+          <p class="nf-hint mt-3 mb-0">
+            <i class="feather icon-info me-1"></i>Activez d'abord la reconnaissance faciale depuis <strong>Mon profil</strong>
+            après une connexion par mot de passe.
+          </p>
+        }
 
-      <p class="nf-auth-card__footer">
-        Pas encore de compte ?
-        <a [routerLink]="['/register']">Créer un compte</a>
-      </p>
+        <p class="nf-auth-card__footer">
+          Pas encore de compte ?
+          <a [routerLink]="['/register']">Créer un compte</a>
+        </p>
+      }
     </div>
   </main>
 </div>
