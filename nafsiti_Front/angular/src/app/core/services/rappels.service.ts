@@ -110,7 +110,7 @@ export class RappelsService {
         const ecritAujourdHui = entrees.some((e) => e.dateCreation.startsWith(jour));
         if (!ecritAujourdHui && new Date().getHours() >= heureRappel) {
           r.push({
-            id: `journal-${jour}`, icone: 'icon-edit-3', type: 'info', lien: '/journal',
+            id: `journal-${jour}`, icone: 'icon-edit-2', type: 'info', lien: '/journal',
             titre: 'Comment allez-vous aujourd’hui ?', texte: 'Prenez une minute pour noter votre humeur dans votre journal.'
           });
         }

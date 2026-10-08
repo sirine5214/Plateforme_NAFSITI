@@ -46,7 +46,7 @@
     <div class="col-lg-5">
       <div class="card nf-card">
         <div class="nf-card__header">
-          <h5><i class="feather icon-edit-3"></i> Comment allez-vous aujourd'hui ?</h5>
+          <h5><i class="feather icon-edit-2"></i> Comment allez-vous aujourd'hui ?</h5>
         </div>
         <form class="nf-card__body" [formGroup]="form" (ngSubmit)="enregistrer()" novalidate>
           @if (erreurForm()) {
@@ -167,7 +167,7 @@
               </article>
             } @empty {
               <div class="nf-placeholder">
-                <i class="feather icon-book-open"></i>
+                <i class="feather icon-book"></i>
                 <p>Votre journal est vide. Commencez par noter votre humeur du jour.</p>
               </div>
             }

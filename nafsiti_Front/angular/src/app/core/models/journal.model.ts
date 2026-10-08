@@ -59,5 +59,5 @@ export const RECOMMANDATIONS: Record<string, { label: string; icon: string; lien
   respiration_guidee: { label: 'Exercice de respiration guidée', icon: 'icon-wind', lien: '/ressources' },
   prise_rdv_prioritaire: { label: 'Prendre rendez-vous avec un professionnel', icon: 'icon-calendar', lien: '/rendez-vous/prendre' },
   meditation_courte: { label: 'Méditation courte', icon: 'icon-sun', lien: '/ressources' },
-  article_gestion_stress: { label: 'Article : gérer le stress', icon: 'icon-book-open', lien: '/ressources' }
+  article_gestion_stress: { label: 'Article : gérer le stress', icon: 'icon-book', lien: '/ressources' }
 };

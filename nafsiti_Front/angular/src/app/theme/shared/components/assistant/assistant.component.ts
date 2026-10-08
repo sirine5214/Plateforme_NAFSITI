@@ -49,7 +49,7 @@ interface Bulle {
           <input id="assistant-message" class="form-control" name="message" [(ngModel)]="message" maxlength="1000"
             placeholder="Posez votre question…" autocomplete="off" />
           <button type="submit" class="btn btn-primary" [disabled]="envoi() || !message.trim()" aria-label="Envoyer">
-            <i class="feather icon-send"></i>
+            <i class="feather icon-arrow-right"></i>
           </button>
         </form>
         <p class="nf-assistant__mention">Assistant d'orientation, pas un professionnel de santé. Urgence : 3114 · 15 · 112</p>

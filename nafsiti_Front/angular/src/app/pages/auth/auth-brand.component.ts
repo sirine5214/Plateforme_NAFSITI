@@ -8,7 +8,7 @@ import { Component } from '@angular/core';
       <img src="assets/images/nafsiti-logo.png" alt="Nafsiti — Votre bien-être, toujours vivant" class="nf-auth-brand__logo" />
       <ul class="nf-auth-brand__points">
         <li>
-          <span class="nf-auth-brand__icon"><i class="feather icon-book-open"></i></span>
+          <span class="nf-auth-brand__icon"><i class="feather icon-book"></i></span>
           <div>
             <strong>Journal d'humeur</strong>
             <p>Notez vos émotions au quotidien et suivez leur évolution.</p>

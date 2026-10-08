@@ -5,7 +5,7 @@ export const TYPES_RESSOURCE: TypeRessource[] = ['RESPIRATION', 'MEDITATION', 'A
 export const TYPE_RESSOURCE_LABELS: Record<TypeRessource, { label: string; icon: string }> = {
   RESPIRATION: { label: 'Respiration', icon: 'icon-wind' },
   MEDITATION: { label: 'Méditation', icon: 'icon-sun' },
-  ARTICLE: { label: 'Article', icon: 'icon-book-open' }
+  ARTICLE: { label: 'Article', icon: 'icon-book' }
 };
 
 export interface Ressource {
