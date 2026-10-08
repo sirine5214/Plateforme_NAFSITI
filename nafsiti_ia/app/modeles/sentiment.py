@@ -1,4 +1,4 @@
-"""Module 3 — Journal & humeur : valence émotionnelle (DistilCamemBERT) et tendance (régression linéaire)."""
+"""Module 3 — Journal & humeur : valence émotionnelle (XLM-RoBERTa sentiment) et tendance (régression linéaire)."""
 import numpy as np
 
 from app.config import MODELE_SENTIMENT
@@ -13,10 +13,13 @@ def charger():
     _sentiment = pipeline("text-classification", model=MODELE_SENTIMENT, top_k=None)
 
 
+VALEUR_CLASSE = {"negative": 1, "neutral": 3, "positive": 5}
+
+
 def analyser_note(texte: str) -> float:
-    """Valence de 1 (très négatif) à 5 (très positif) : espérance sur les 5 classes « 1 star » … « 5 stars »."""
+    """Valence de 1 (très négatif) à 5 (très positif) : espérance sur les classes négatif / neutre / positif."""
     scores = _sentiment([texte], truncation=True)[0]
-    return round(sum(int(s["label"][0]) * s["score"] for s in scores), 2)
+    return round(sum(VALEUR_CLASSE[s["label"].lower()] * s["score"] for s in scores), 2)
 
 
 def tendance_humeur(humeurs_30j: list[float]) -> dict:

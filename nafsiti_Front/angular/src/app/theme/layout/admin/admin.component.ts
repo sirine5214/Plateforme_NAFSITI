@@ -9,10 +9,11 @@ import { NavigationComponent } from './navigation/navigation.component';
 import { BreadcrumbComponent } from '../../shared/components/breadcrumb/breadcrumb.component';
 import { Footer } from './footer/footer';
 import { LayoutStateService } from '../../shared/service/layout-state.service';
+import { AssistantComponent } from '../../shared/components/assistant/assistant.component';
 
 @Component({
   selector: 'app-admin',
-  imports: [RouterModule, NavBarComponent, NavigationComponent, CommonModule, BreadcrumbComponent, Footer],
+  imports: [RouterModule, NavBarComponent, NavigationComponent, CommonModule, BreadcrumbComponent, Footer, AssistantComponent],
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.scss']
 })

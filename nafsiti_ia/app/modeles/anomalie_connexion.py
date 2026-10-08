@@ -9,7 +9,9 @@ FEATURES = ["heure_connexion", "nouvel_appareil", "pays_different",
             "echecs_24h", "distance_km_derniere_ip"]
 CHEMIN = DOSSIER_MODELES / "login_anomaly.joblib"
 
-SEUIL_BLOCAGE = 0.65
+# Calibrés sur l'historique synthétique : une seule anomalie (nouvel appareil, voyage, nuit + échecs)
+# demande le visage ; le blocage est réservé aux combinaisons extrêmes.
+SEUIL_BLOCAGE = 0.72
 SEUIL_MFA = 0.55
 
 _modele: IsolationForest | None = None
@@ -18,11 +20,13 @@ _modele: IsolationForest | None = None
 def historique_synthetique(n: int = 5000, graine: int = 42) -> np.ndarray:
     """Connexions « normales » simulées, utilisées tant qu'aucun historique réel n'est disponible."""
     rng = np.random.default_rng(graine)
-    heures = np.clip(rng.normal(15, 4, n), 6, 23.99)               # surtout en journée / soirée
-    nouvel_appareil = (rng.random(n) < 0.08).astype(float)         # rarement un nouvel appareil
-    pays_different = (rng.random(n) < 0.01).astype(float)
-    echecs = rng.choice([0, 0, 0, 0, 0, 0, 1, 1, 2], n).astype(float)
-    distance = np.abs(rng.normal(0, 15, n))                        # quelques km au plus
+    heures = np.clip(rng.normal(15, 4, n), 0, 23.99)               # surtout en journée / soirée
+    nuit = rng.random(n) < 0.06                                    # quelques connexions tardives légitimes
+    heures[nuit] = rng.uniform(0, 6, nuit.sum())
+    nouvel_appareil = (rng.random(n) < 0.10).astype(float)         # rarement un nouvel appareil
+    pays_different = (rng.random(n) < 0.02).astype(float)          # voyages occasionnels
+    echecs = rng.choice([0] * 12 + [1] * 4 + [2] * 2 + [3], n).astype(float)
+    distance = np.abs(rng.normal(0, 30, n))                        # quelques dizaines de km au plus
     return np.column_stack([heures, nouvel_appareil, pays_different, echecs, distance])
 
 

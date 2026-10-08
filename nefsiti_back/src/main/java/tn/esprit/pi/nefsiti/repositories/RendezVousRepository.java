@@ -33,6 +33,11 @@ public interface RendezVousRepository extends JpaRepository<RendezVous, Long> {
                           @Param("fin") LocalDateTime fin,
                           @Param("annule") StatutRendezVous annule);
 
+    @Query("select avg(r.noteAvis) from RendezVous r where r.therapeute.id = :id and r.noteAvis is not null")
+    Double moyenneAvis(@Param("id") Long therapeuteId);
+
+    long countByTherapeuteIdAndNoteAvisIsNotNull(Long therapeuteId);
+
     /** Un patient et un thérapeute peuvent échanger des messages s'ils ont au moins un rendez-vous non annulé. */
     @Query("""
             select count(r) > 0 from RendezVous r

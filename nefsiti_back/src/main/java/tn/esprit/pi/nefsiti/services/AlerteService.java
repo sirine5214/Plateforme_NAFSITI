@@ -37,6 +37,7 @@ public class AlerteService {
     private final RendezVousRepository rendezVousRepository;
     private final IaClient iaClient;
     private final TempsReelHandler tempsReel;
+    private final EmailService emailService;
 
     /**
      * Analyse un texte du patient et crée une alerte si le niveau est élevé.
@@ -113,8 +114,10 @@ public class AlerteService {
         utilisateurRepository.findByRoleAndActifTrueOrderByNomAscPrenomAsc(Role.ADMINISTRATEUR)
                 .forEach(a -> tempsReel.envoyer(a.getId(), "ALERTE", vue));
         if (patient.isPartageAlertes()) {
-            rendezVousRepository.therapeutesDuPatient(patient.getId(), StatutRendezVous.ANNULE)
-                    .forEach(t -> tempsReel.envoyer(t.getId(), "ALERTE", vue));
+            rendezVousRepository.therapeutesDuPatient(patient.getId(), StatutRendezVous.ANNULE).forEach(t -> {
+                tempsReel.envoyer(t.getId(), "ALERTE", vue);
+                emailService.nouvelleAlerte(t.getEmail(), t.getPrenom()); // utile si le thérapeute est hors ligne
+            });
         }
     }
 }

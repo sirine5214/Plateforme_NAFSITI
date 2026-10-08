@@ -18,6 +18,9 @@ export interface Therapeute extends PersonneResume {
   specialites: string | null;
   approche: string | null;
   langues: string | null;
+  /** Moyenne des avis des patients (null tant qu'il n'y en a aucun) */
+  noteMoyenne: number | null;
+  nombreAvis: number;
 }
 
 /** Suggestion du matching IA (score 0-1) : le patient garde le libre choix. */
@@ -49,6 +52,14 @@ export interface RendezVous {
   patient: PersonneResume;
   therapeute: PersonneResume;
   dateCreation: string;
+  /** Avis du patient après la séance (1 à 5) */
+  noteAvis: number | null;
+  commentaireAvis: string | null;
+}
+
+export interface AvisRequest {
+  note: number;
+  commentaire?: string;
 }
 
 export interface RendezVousRequest {

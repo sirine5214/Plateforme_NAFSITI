@@ -1,6 +1,12 @@
 import { PersonneResume } from './rendez-vous.model';
 
-export type SourceAlerte = 'JOURNAL' | 'MESSAGE';
+export type SourceAlerte = 'JOURNAL' | 'MESSAGE' | 'CHATBOT';
+
+export const SOURCE_ALERTE_LABELS: Record<SourceAlerte, string> = {
+  JOURNAL: 'Journal',
+  MESSAGE: 'Message',
+  CHATBOT: 'Assistant'
+};
 
 export interface Alerte {
   id: number;

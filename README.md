@@ -48,16 +48,21 @@ Le navigateur ne parle jamais directement au service IA : Spring Boot pseudonymi
 |---|---|---|---|
 | 1 | Comptes & sécurité | Connexion **au choix** par mot de passe ou par **reconnaissance faciale** (webcam). Détection des connexions anormales : vérification faciale exigée (MFA) ou blocage temporaire. RGPD : consentement, export, effacement | FaceNet-512 (TensorFlow) · IsolationForest |
 | 2 | Rendez-vous | Suggestion des thérapeutes adaptés au besoin exprimé en texte libre | Embeddings multilingues |
-| 3 | Journal & humeur | Journal quotidien (humeur 1-10, émotions, notes chiffrées), courbe sur 30 jours, détection de baisse | DistilCamemBERT + régression |
+| 3 | Journal & humeur | Journal quotidien (humeur 1-10, émotions, notes chiffrées), courbe sur 30 jours, détection de baisse | XLM-RoBERTa sentiment + régression |
 | 4 | Ressources | Respiration, méditation, articles ; recommandations personnalisées et heure de rappel | Similarité sémantique |
 | 5 | Messagerie temps réel | Patient ↔ thérapeute (WebSocket), modération automatique et revue humaine | Detoxify multilingue |
-| 6 | Détection de risque | Signaux de détresse dans le journal et les messages, numéros d'urgence (3114, 15, 112), alertes aux thérapeutes (avec consentement) | Règles + TF-IDF / régression logistique |
+| 6 | Détection de risque | Signaux de détresse dans le journal et les messages, numéros d'urgence (3114, 15, 112), alertes aux thérapeutes (avec consentement, en temps réel et par e-mail) | Règles + TF-IDF et embeddings / régression logistique |
+| — | Chatbot d'orientation | Assistant flottant sur toutes les pages : oriente vers la bonne fonctionnalité ; une crise donne toujours les numéros d'urgence et une alerte | Module 6 + intentions par embeddings |
+
+Autres fonctionnalités : **avis des patients** après chaque séance (la note moyenne alimente le matching), **notifications intelligentes** dans la cloche de l'en-tête et le navigateur (rappel de journal à l'heure habituelle calculée par l'IA, séance dans les 24 h, avis à donner, demandes à confirmer, alertes, encouragements), **e-mails** de sécurité (connexion bloquée) et d'alerte.
+
+Les scores de chaque modèle sur des jeux de test jamais vus à l'entraînement sont dans [`nafsiti_ia/data/evaluation/rapport.md`](nafsiti_ia/data/evaluation/rapport.md).
 
 Nafsiti ne pose **aucun diagnostic** : les modèles orientent ou alertent, et la décision reste humaine.
 
 ### Prévues
 
-Notifications push, réinitialisation du mot de passe, validation des thérapeutes, géolocalisation IP pour le module 1, e-mail d'alerte de sécurité.
+Réinitialisation du mot de passe par e-mail, validation des thérapeutes par l'administrateur, géolocalisation IP pour le module 1 (pays et distance valent 0 faute de base GeoIP), application mobile.
 
 ---
 
@@ -189,6 +194,8 @@ La clé `NAFSITI_IA_API_KEY` du fichier `.env` doit être identique à `app.ia.a
 | `IA_URL` | URL du service IA | `http://localhost:8000` |
 | `IA_API_KEY` | Clé partagée avec le service IA | clé de développement — **à changer** |
 | `APP_CHIFFREMENT_CLE` | Clé AES-256 en Base64 (32 octets) pour les données sensibles | clé de développement — **à changer** |
+| `SPRING_MAIL_HOST`, `SPRING_MAIL_PORT`, `SPRING_MAIL_USERNAME`, `SPRING_MAIL_PASSWORD` | Serveur SMTP pour les e-mails (facultatif) | aucun : les e-mails sont seulement journalisés |
+| `MAIL_FROM` | Expéditeur des e-mails | `no-reply@nafsiti.tn` |
 
 ### 4. Frontend
 
@@ -285,6 +292,7 @@ Toutes les routes sont préfixées par `/api`. Hors connexion et inscription, el
 | POST | `/api/rendez-vous` | Patient | Réserver un créneau (`disponibiliteId`, `motif`) |
 | PATCH | `/api/rendez-vous/{id}/confirmer` | Thérapeute | Confirmer une demande |
 | PATCH | `/api/rendez-vous/{id}/annuler` | Concerné ou admin | Annuler et libérer le créneau |
+| POST | `/api/rendez-vous/{id}/avis` | Patient | Noter une séance confirmée et terminée (`note` 1-5, `commentaire`) |
 | GET | `/api/therapeutes/recommandations?besoin=&langue=` | Connecté | Matching IA : 5 thérapeutes les plus adaptés |
 
 ### Journal, ressources, messagerie, alertes
@@ -306,6 +314,7 @@ Toutes les routes sont préfixées par `/api`. Hors connexion et inscription, el
 | PATCH | `/api/moderation/messages/{id}` | Admin | Publier ou rejeter (`publier`) |
 | GET | `/api/alertes` | Thérapeute, admin | Alertes de détresse |
 | PATCH | `/api/alertes/{id}/traiter` | Thérapeute, admin | Marquer une alerte traitée |
+| POST | `/api/chatbot` | Connecté | Chatbot d'orientation (`message`) : réponse et liens proposés |
 
 **Temps réel** : WebSocket `ws://localhost:8080/ws`. Le client envoie d'abord `{"type":"auth","token":"<JWT>"}`, puis reçoit des événements `MESSAGE`, `ALERTE` et `MODERATION`.
 

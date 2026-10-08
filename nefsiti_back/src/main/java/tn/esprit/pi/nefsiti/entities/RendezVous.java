@@ -48,6 +48,16 @@ public class RendezVous {
     @Column(nullable = false, updatable = false)
     private LocalDateTime dateCreation;
 
+    // ===== Avis du patient après la séance (alimente la note moyenne du matching) =====
+
+    /** Note de 1 à 5 ; null tant que le patient n'a pas donné son avis. */
+    private Integer noteAvis;
+
+    @Column(length = 1000)
+    private String commentaireAvis;
+
+    private LocalDateTime dateAvis;
+
     @PrePersist
     void prePersist() {
         if (dateCreation == null) {

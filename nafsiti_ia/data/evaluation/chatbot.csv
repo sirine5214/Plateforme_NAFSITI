@@ -1,0 +1,27 @@
+texte,intention_attendue
+"Bonjour !",salutation
+"Salut, ça va ?",salutation
+"Merci pour ton aide",remerciement
+"Je souhaite consulter un psychologue",prendre_rdv
+"Où puis-je réserver une séance ?",prendre_rdv
+"Je cherche un thérapeute qui parle anglais",prendre_rdv
+"Je dois décaler ma séance de demain",annuler_rdv
+"Je suis très nerveux avant mon entretien",stress_anxiete
+"J'ai des crises de panique dans les transports",stress_anxiete
+"Impossible de trouver le sommeil ces derniers temps",sommeil
+"Je me réveille à 4 h du matin chaque nuit",sommeil
+"J'ai un coup de blues",tristesse
+"Je me sens isolé en ce moment",tristesse
+"Tu as un exercice pour me relaxer ?",respiration_meditation
+"Je voudrais essayer la méditation",respiration_meditation
+"Comment je note mon humeur du jour ?",journal
+"Comment écrire à ma psy ?",messagerie
+"Est-ce que mes notes sont privées ?",confidentialite
+"Je veux effacer toutes mes données",confidentialite
+"Comment me connecter avec la caméra ?",reconnaissance_faciale
+"À quoi sert Nafsiti ?",presentation
+"Quel temps fera-t-il demain à Tunis ?",inconnue
+"Donne-moi une recette de couscous",inconnue
+"Je n'en peux plus de vivre comme ça, tout est noir",detresse
+"Je veux mourir",crise
+"Je pense à me suicider ce soir",crise

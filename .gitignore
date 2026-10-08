@@ -12,6 +12,8 @@ nefsiti_back/target/
 # ===== Service IA (Python) =====
 nafsiti_ia/.venv/
 nafsiti_ia/models/*.joblib
+# Photos de visages du jeu de test : données biométriques, jamais versionnées
+nafsiti_ia/data/evaluation/visages/*/
 __pycache__/
 *.pyc
 

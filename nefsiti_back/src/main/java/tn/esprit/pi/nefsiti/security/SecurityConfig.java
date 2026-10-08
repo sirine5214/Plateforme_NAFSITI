@@ -62,7 +62,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/utilisateurs/me", "/api/utilisateurs/me/**").authenticated()
                         .requestMatchers("/api/utilisateurs/**").hasRole(Role.ADMINISTRATEUR.name())
                         .requestMatchers("/api/disponibilites", "/api/disponibilites/**").hasRole(Role.THERAPEUTE.name())
-                        .requestMatchers(HttpMethod.POST, "/api/rendez-vous").hasRole(Role.PATIENT.name())
+                        .requestMatchers(HttpMethod.POST, "/api/rendez-vous", "/api/rendez-vous/*/avis")
+                        .hasRole(Role.PATIENT.name())
                         .requestMatchers(HttpMethod.PATCH, "/api/rendez-vous/*/confirmer").hasRole(Role.THERAPEUTE.name())
                         // Module 3 : journal personnel
                         .requestMatchers("/api/journal", "/api/journal/**").hasRole(Role.PATIENT.name())

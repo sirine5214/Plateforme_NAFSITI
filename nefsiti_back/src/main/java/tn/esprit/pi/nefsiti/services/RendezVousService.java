@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tn.esprit.pi.nefsiti.dto.AvisRequest;
 import tn.esprit.pi.nefsiti.dto.RendezVousRequest;
 import tn.esprit.pi.nefsiti.dto.RendezVousResponse;
 import tn.esprit.pi.nefsiti.entities.*;
@@ -106,6 +107,25 @@ public class RendezVousService {
         if (creneau != null) {
             creneau.setReserve(false); // le créneau redevient réservable
         }
+        return RendezVousResponse.from(rdv);
+    }
+
+    /** Patient : note une séance confirmée et terminée (une seule fois). */
+    @Transactional
+    public RendezVousResponse noter(Long patientId, Long id, AvisRequest req) {
+        RendezVous rdv = charger(id);
+        if (!rdv.getPatient().getId().equals(patientId)) {
+            throw new ApiException(HttpStatus.FORBIDDEN, "Ce rendez-vous ne vous concerne pas");
+        }
+        if (rdv.getStatut() != StatutRendezVous.CONFIRME || rdv.getDateFin().isAfter(LocalDateTime.now())) {
+            throw ApiException.badRequest("Vous pourrez donner votre avis une fois la séance confirmée terminée");
+        }
+        if (rdv.getNoteAvis() != null) {
+            throw ApiException.conflict("Vous avez déjà donné votre avis sur cette séance");
+        }
+        rdv.setNoteAvis(req.note());
+        rdv.setCommentaireAvis(req.commentaire() == null || req.commentaire().isBlank() ? null : req.commentaire().trim());
+        rdv.setDateAvis(LocalDateTime.now());
         return RendezVousResponse.from(rdv);
     }
 

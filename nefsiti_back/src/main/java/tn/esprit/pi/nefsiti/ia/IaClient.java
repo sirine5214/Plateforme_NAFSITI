@@ -78,6 +78,13 @@ public class IaClient {
     public record Risque(int niveau, Double probabilite, String source, List<String> recommandations) {
     }
 
+    public record ActionChatbot(String libelle, String lien) {
+    }
+
+    public record ReponseChatbot(String reponse, List<ActionChatbot> actions, String intention,
+                                 @JsonProperty("niveau_risque") int niveauRisque, double confiance) {
+    }
+
     public record Enrolement(List<Double> empreinte, int captures, String modele) {
     }
 
@@ -164,6 +171,12 @@ public class IaClient {
 
     public Risque risque(String userId, String texte) {
         return post("/v1/risque", Map.of("user_id", userId, "texte", texte), Risque.class);
+    }
+
+    // ===== Chatbot d'orientation =====
+
+    public ReponseChatbot chatbot(String userId, String texte) {
+        return post("/v1/chatbot", Map.of("user_id", userId, "texte", texte), ReponseChatbot.class);
     }
 
     // ===== Reconnaissance faciale =====

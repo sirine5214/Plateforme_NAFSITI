@@ -1,5 +1,6 @@
 import { Component, OnInit, TemplateRef, computed, inject, signal } from '@angular/core';
 import { DatePipe, LowerCasePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -13,7 +14,7 @@ type Filtre = 'A_VENIR' | StatutRendezVous | 'PASSES' | 'TOUS';
 
 @Component({
   selector: 'app-mes-rendez-vous',
-  imports: [DatePipe, LowerCasePipe, RouterLink],
+  imports: [DatePipe, LowerCasePipe, RouterLink, FormsModule],
   templateUrl: './mes-rendez-vous.component.html'
 })
 export class MesRendezVousComponent implements OnInit {
@@ -45,6 +46,11 @@ export class MesRendezVousComponent implements OnInit {
   readonly filtre = signal<Filtre>('A_VENIR');
   readonly enCours = signal<number | null>(null);
   readonly notification = signal<{ type: 'success' | 'danger'; texte: string } | null>(null);
+
+  // Avis du patient après une séance
+  readonly etoiles = [1, 2, 3, 4, 5];
+  readonly noteChoisie = signal(0);
+  commentaireAvis = '';
 
   readonly stats = computed(() => {
     const aVenir = this.rendezVous().filter((r) => !estPasse(r.dateHeure));
@@ -107,6 +113,26 @@ export class MesRendezVousComponent implements OnInit {
 
   peutAnnuler(r: RendezVous): boolean {
     return r.statut !== 'ANNULE' && !estPasse(r.dateHeure);
+  }
+
+  /** Patient : séance confirmée, terminée et pas encore notée. */
+  peutNoter(r: RendezVous): boolean {
+    return this.estPatient() && r.statut === 'CONFIRME' && estPasse(r.dateFin) && r.noteAvis == null;
+  }
+
+  ouvrirAvis(r: RendezVous, modele: TemplateRef<unknown>) {
+    this.noteChoisie.set(0);
+    this.commentaireAvis = '';
+    this.modalService.open(modele, { centered: true }).closed.subscribe(() => {
+      this.enCours.set(r.id);
+      this.rdvService.noter(r.id, { note: this.noteChoisie(), commentaire: this.commentaireAvis.trim() || undefined }).subscribe({
+        next: (maj) => {
+          this.remplacer(maj);
+          this.notifier('success', 'Merci pour votre avis !');
+        },
+        error: (err) => this.echec(err)
+      });
+    });
   }
 
   confirmer(r: RendezVous) {

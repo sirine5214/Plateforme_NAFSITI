@@ -33,7 +33,7 @@ public class DisponibiliteService {
     private final UtilisateurRepository utilisateurRepository;
     private final IaClient iaClient;
 
-    /** Pas encore de système d'avis : note neutre identique pour tous les thérapeutes. */
+    /** Note neutre utilisée par le matching tant qu'un thérapeute n'a reçu aucun avis. */
     private static final double NOTE_PAR_DEFAUT = 4.0;
 
     // ===== Thérapeute : gérer ses disponibilités =====
@@ -81,9 +81,15 @@ public class DisponibiliteService {
     public List<TherapeuteResponse> therapeutes() {
         LocalDateTime maintenant = LocalDateTime.now();
         return utilisateurRepository.findByRoleAndActifTrueOrderByNomAscPrenomAsc(Role.THERAPEUTE).stream()
-                .map(t -> TherapeuteResponse.from(t,
-                        disponibiliteRepository.countByTherapeuteIdAndReserveFalseAndDebutAfter(t.getId(), maintenant)))
+                .map(t -> vue(t, maintenant))
                 .toList();
+    }
+
+    private TherapeuteResponse vue(Utilisateur t, LocalDateTime maintenant) {
+        return TherapeuteResponse.from(t,
+                disponibiliteRepository.countByTherapeuteIdAndReserveFalseAndDebutAfter(t.getId(), maintenant),
+                rendezVousRepository.moyenneAvis(t.getId()),
+                rendezVousRepository.countByTherapeuteIdAndNoteAvisIsNotNull(t.getId()));
     }
 
     /**
@@ -98,7 +104,7 @@ public class DisponibiliteService {
                 .collect(Collectors.toMap(Utilisateur::getId, Function.identity()));
         List<IaClient.ProfilTherapeute> profils = therapeutes.values().stream()
                 .map(t -> new IaClient.ProfilTherapeute(t.getId(), t.getSpecialites(), t.getApproche(), t.getLangues(),
-                        NOTE_PAR_DEFAUT,
+                        noteMatching(t.getId()),
                         disponibiliteRepository.countByTherapeuteIdAndReserveFalseAndDebutBetween(
                                 t.getId(), maintenant, maintenant.plusDays(7))))
                 .toList();
@@ -113,10 +119,14 @@ public class DisponibiliteService {
                 .filter(c -> therapeutes.containsKey(c.therapeuteId()))
                 .map(c -> {
                     Utilisateur t = therapeutes.get(c.therapeuteId());
-                    long libres = disponibiliteRepository.countByTherapeuteIdAndReserveFalseAndDebutAfter(t.getId(), maintenant);
-                    return new TherapeuteRecommandeResponse(TherapeuteResponse.from(t, libres), c.score(), c.similarite());
+                    return new TherapeuteRecommandeResponse(vue(t, maintenant), c.score(), c.similarite());
                 })
                 .toList();
+    }
+
+    private double noteMatching(Long therapeuteId) {
+        Double moyenne = rendezVousRepository.moyenneAvis(therapeuteId);
+        return moyenne == null ? NOTE_PAR_DEFAUT : moyenne;
     }
 
     @Transactional(readOnly = true)

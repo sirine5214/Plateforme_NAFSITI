@@ -9,7 +9,7 @@ from contextlib import asynccontextmanager
 from fastapi import Depends, FastAPI, HTTPException
 
 from app import registre
-from app.modeles import (anomalie_connexion, matching, moderation, recommandation, risque, sentiment,
+from app.modeles import (anomalie_connexion, chatbot, matching, moderation, recommandation, risque, sentiment,
                          visage)
 from app.schemas import *  # noqa: F403 — contrat de l'API
 from app.securite import verifier_cle
@@ -98,6 +98,14 @@ def moderer(req: TexteIn):
           dependencies=[Depends(verifier_cle), Depends(registre.exiger("risque"))])
 def endpoint_risque(req: TexteIn):
     return risque.detecter_risque(req.texte)
+
+
+# ===== Chatbot d'orientation =====
+
+@app.post("/v1/chatbot", response_model=ChatbotOut,
+          dependencies=[Depends(verifier_cle), Depends(registre.exiger("chatbot"))])
+def repondre_chatbot(req: TexteIn):
+    return chatbot.repondre(req.texte)
 
 
 # ===== Reconnaissance faciale =====

@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 
 import { environment } from 'src/environments/environment';
 import {
+  AvisRequest,
   Disponibilite,
   DisponibiliteRequest,
   RendezVous,
@@ -30,6 +31,11 @@ export class RendezVousService {
 
   confirmer(id: number): Observable<RendezVous> {
     return this.http.patch<RendezVous>(`${this.api}/rendez-vous/${id}/confirmer`, {});
+  }
+
+  /** Patient : avis sur une séance confirmée et terminée. */
+  noter(id: number, req: AvisRequest): Observable<RendezVous> {
+    return this.http.post<RendezVous>(`${this.api}/rendez-vous/${id}/avis`, req);
   }
 
   annuler(id: number): Observable<RendezVous> {

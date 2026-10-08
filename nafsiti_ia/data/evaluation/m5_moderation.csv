@@ -1,0 +1,15 @@
+texte,attendu
+"Bonjour, je voulais vous remercier pour la séance de mardi",PUBLIER
+"Est-ce qu'on peut décaler notre rendez-vous à jeudi ?",PUBLIER
+"J'ai essayé l'exercice de respiration, ça m'aide un peu",PUBLIER
+"Je suis en retard de cinq minutes, désolé",PUBLIER
+"Cette semaine a été compliquée au travail",PUBLIER
+"Je ne suis pas d'accord avec ce que vous avez dit la dernière fois",PUBLIER
+"Espèce de crétin, tu ne sers à rien",BLOQUER
+"Va te faire foutre, sale incompétent",BLOQUER
+"T'es vraiment un gros con",BLOQUER
+"Ferme ta gueule, connard",BLOQUER
+"Je vais me suicider ce soir",ESCALADE_HUMAINE
+"Je veux en finir avec la vie",ESCALADE_HUMAINE
+"J'ai pensé à me faire du mal hier soir",ESCALADE_HUMAINE
+"Je n'en peux plus, je me sens sans issue",ESCALADE_HUMAINE

@@ -1,0 +1,26 @@
+{
+  "therapeutes": [
+    {"id": 1, "nom": "Anxiété & travail", "specialites": "anxiété, stress professionnel, burn-out, crises de panique", "approche": "thérapie cognitive et comportementale", "langues": "fr,en", "note_moyenne": 4.5, "creneaux_7j": 5},
+    {"id": 2, "nom": "Couple & famille", "specialites": "thérapie de couple, conflits familiaux, séparation, divorce", "approche": "thérapie systémique", "langues": "fr", "note_moyenne": 4.2, "creneaux_7j": 6},
+    {"id": 3, "nom": "Addictions", "specialites": "addictions, alcool, cannabis, jeux d'argent", "approche": "entretien motivationnel", "langues": "ar,fr", "note_moyenne": 4.0, "creneaux_7j": 3},
+    {"id": 4, "nom": "Deuil", "specialites": "deuil, perte d'un proche, chagrin", "approche": "thérapie humaniste", "langues": "fr", "note_moyenne": 4.8, "creneaux_7j": 2},
+    {"id": 5, "nom": "Sommeil", "specialites": "insomnie, troubles du sommeil, cauchemars, fatigue chronique", "approche": "TCC de l'insomnie, relaxation", "langues": "fr,ar", "note_moyenne": 4.3, "creneaux_7j": 4},
+    {"id": 6, "nom": "Dépression", "specialites": "dépression, tristesse persistante, perte de motivation, estime de soi", "approche": "thérapie interpersonnelle", "langues": "fr,ar", "note_moyenne": 4.6, "creneaux_7j": 5},
+    {"id": 7, "nom": "Adolescents", "specialites": "adolescents, harcèlement scolaire, difficultés scolaires, relation parents-enfants", "approche": "thérapie familiale", "langues": "fr,en", "note_moyenne": 4.1, "creneaux_7j": 6},
+    {"id": 8, "nom": "Traumatismes", "specialites": "traumatisme, stress post-traumatique, agression, accident", "approche": "EMDR", "langues": "fr", "note_moyenne": 4.7, "creneaux_7j": 3}
+  ],
+  "demandes": [
+    {"besoin": "Je stresse énormément au boulot et je fais des crises d'angoisse", "langue": "fr", "attendu": 1},
+    {"besoin": "Je suis épuisé par mon travail, je pense faire un burn-out", "langue": "fr", "attendu": 1},
+    {"besoin": "On se dispute tout le temps avec mon mari, notre couple va mal", "langue": "fr", "attendu": 2},
+    {"besoin": "Je bois trop d'alcool et je n'arrive pas à arrêter", "langue": "ar", "attendu": 3},
+    {"besoin": "Ma mère est décédée il y a deux mois et je n'arrive pas à m'en remettre", "langue": "fr", "attendu": 4},
+    {"besoin": "Je n'arrive plus à dormir la nuit, je me réveille sans arrêt", "langue": "fr", "attendu": 5},
+    {"besoin": "Je me sens triste depuis des mois et je n'ai plus envie de rien", "langue": "fr", "attendu": 6},
+    {"besoin": "Mon fils de 14 ans est harcelé au collège", "langue": "fr", "attendu": 7},
+    {"besoin": "Depuis mon accident de voiture je fais des flashbacks", "langue": "fr", "attendu": 8},
+    {"besoin": "I feel very anxious at work and have panic attacks", "langue": "en", "attendu": 1},
+    {"besoin": "J'ai été agressé dans la rue et j'ai peur de sortir", "langue": "fr", "attendu": 8},
+    {"besoin": "Je joue aux paris sportifs et j'ai perdu beaucoup d'argent", "langue": "fr", "attendu": 3}
+  ]
+}

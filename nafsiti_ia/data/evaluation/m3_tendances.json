@@ -1,0 +1,7 @@
+[
+  {"description": "Humeur stable autour de 7", "humeurs": [7, 7, 6, 7, 8, 7, 7, 6, 7, 7, 8, 7, 7, 7], "statut": "stable", "baisse_significative": false},
+  {"description": "Nette amélioration", "humeurs": [3, 3, 4, 4, 4, 5, 5, 6, 6, 6, 7, 7, 8, 8], "statut": "amelioration", "baisse_significative": false},
+  {"description": "Chute sur la dernière semaine", "humeurs": [7, 7, 8, 7, 7, 6, 7, 7, 6, 5, 4, 4, 3, 3], "statut": "degradation", "baisse_significative": true},
+  {"description": "Dégradation lente sur un mois", "humeurs": [8, 8, 8, 7, 8, 7, 7, 7, 7, 6, 7, 6, 6, 6, 6, 5, 6, 5, 5, 5, 5, 4, 5, 4, 4, 4, 4, 3, 4, 3], "statut": "degradation", "baisse_significative": true},
+  {"description": "Moins de 7 jours d'historique", "humeurs": [5, 6, 4], "statut": "historique_insuffisant", "baisse_significative": false}
+]

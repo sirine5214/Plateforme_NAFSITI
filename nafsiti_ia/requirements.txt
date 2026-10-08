@@ -21,4 +21,4 @@ detoxify>=0.5.2
 tensorflow>=2.16
 tf-keras>=2.16
 deepface>=0.0.93
-opencv-python>=4.9
+opencv-python>=4.9,<5  # OpenCV 5 ne fournit plus les fichiers haarcascade utilisés par DeepFace

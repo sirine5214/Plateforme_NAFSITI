@@ -1,0 +1,26 @@
+{
+  "catalogue": [
+    {"id": 1, "titre": "Respiration carrée", "description": "Technique simple pour calmer l'anxiété et le stress en quelques minutes.", "popularite": 12, "valide_par_pro": true},
+    {"id": 2, "titre": "Cohérence cardiaque 365", "description": "Respiration rythmée pour réduire le stress et améliorer le sommeil, 3 fois par jour.", "popularite": 20, "valide_par_pro": true},
+    {"id": 3, "titre": "Respiration 4-7-8 pour s'endormir", "description": "Exercice de respiration pour apaiser le mental et favoriser l'endormissement.", "popularite": 8, "valide_par_pro": true},
+    {"id": 4, "titre": "Scan corporel guidé", "description": "Méditation de pleine conscience pour relâcher les tensions physiques et la fatigue.", "popularite": 5, "valide_par_pro": true},
+    {"id": 5, "titre": "Méditation de l'ancrage", "description": "Courte méditation pour revenir au moment présent lors d'une crise d'angoisse.", "popularite": 7, "valide_par_pro": true},
+    {"id": 6, "titre": "Méditation de bienveillance envers soi", "description": "Pratique d'auto-compassion pour les moments de tristesse, de solitude ou d'autocritique.", "popularite": 3, "valide_par_pro": true},
+    {"id": 7, "titre": "Comprendre et gérer le stress au travail", "description": "Article sur les mécanismes du stress professionnel, le burn-out et les leviers d'action.", "popularite": 15, "valide_par_pro": true},
+    {"id": 8, "titre": "Mieux dormir : les bases de l'hygiène du sommeil", "description": "Conseils pratiques contre l'insomnie et les troubles du sommeil liés à l'anxiété.", "popularite": 10, "valide_par_pro": true},
+    {"id": 9, "titre": "Que faire face à des pensées sombres ?", "description": "Repères pour traverser un moment de détresse et savoir qui contacter.", "popularite": 4, "valide_par_pro": true}
+  ],
+  "profils": [
+    {"description": "Insomnie", "entrees_journal": ["Je n'arrive pas à m'endormir, je tourne dans mon lit jusqu'à 3 h", "Encore une mauvaise nuit, je suis épuisé"], "attendus_top3": [3, 8]},
+    {"description": "Stress au travail", "entrees_journal": ["Mon chef me met une pression énorme", "Trop de réunions, je n'arrive plus à suivre au bureau"], "attendus_top3": [7]},
+    {"description": "Crises d'angoisse", "entrees_journal": ["J'ai fait une crise d'angoisse dans le métro", "Mon cœur s'emballe et j'ai du mal à respirer quand je panique"], "attendus_top3": [5, 1]},
+    {"description": "Tristesse et solitude", "entrees_journal": ["Je me sens seul ce soir", "Je suis très dur avec moi-même, je me critique sans arrêt"], "attendus_top3": [6]},
+    {"description": "Pensées sombres", "entrees_journal": ["J'ai des idées noires depuis quelques jours", "Je ne sais plus vers qui me tourner"], "attendus_top3": [9]},
+    {"description": "Tensions physiques", "entrees_journal": ["J'ai le dos et les épaules complètement tendus", "Mon corps est crispé toute la journée"], "attendus_top3": [4]}
+  ],
+  "heures": [
+    {"description": "Ouvre l'application le soir", "heures_ouverture": [21, 22, 22, 22, 8, 21], "attendu": 22},
+    {"description": "Ouvre l'application le matin", "heures_ouverture": [7, 7, 8, 7, 19], "attendu": 7},
+    {"description": "Aucun historique : 20 h par défaut", "heures_ouverture": [], "attendu": 20}
+  ]
+}

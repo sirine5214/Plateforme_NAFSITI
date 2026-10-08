@@ -55,9 +55,12 @@ def extraire_empreinte(image_b64: str) -> np.ndarray:
             anti_spoofing=FACE_ANTI_SPOOFING,
         )
     except ValueError as e:
-        if "spoof" in str(e).lower():
+        message = str(e).lower()
+        if "spoof" in message:
             raise VisageErreur("Visage non authentique détecté : présentez votre visage, pas une photo ou un écran")
-        raise VisageErreur("Aucun visage détecté : placez-vous face à la caméra, dans un endroit éclairé")
+        if "could not be detected" in message:
+            raise VisageErreur("Aucun visage détecté : placez-vous face à la caméra, dans un endroit éclairé")
+        raise    # erreur technique (installation, modèle) : ne pas la faire passer pour un problème de cadrage
     if len(representations) != 1:
         raise VisageErreur("Un seul visage doit être visible à l'image")
     return _normaliser(np.array(representations[0]["embedding"], dtype=float))

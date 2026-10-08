@@ -109,6 +109,20 @@ class RisqueOut(BaseModel):
     recommandations: list[str]
 
 
+# ===== Chatbot d'orientation =====
+class ActionChatbot(BaseModel):
+    libelle: str
+    lien: str                                      # route Angular (ex. /ressources) ou tel:3114
+
+
+class ChatbotOut(BaseModel):
+    reponse: str
+    actions: list[ActionChatbot]
+    intention: str
+    niveau_risque: int
+    confiance: float
+
+
 # ===== Reconnaissance faciale =====
 class EnrolementIn(BaseModel):
     user_id: str

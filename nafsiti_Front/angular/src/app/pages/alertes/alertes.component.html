@@ -55,7 +55,7 @@
                     <div class="text-muted small">expression explicite</div>
                   }
                 </td>
-                <td>{{ a.source === 'JOURNAL' ? 'Journal' : 'Message' }}</td>
+                <td>{{ sources[a.source] }}</td>
                 <td>{{ a.dateCreation | date: 'dd/MM/yyyy HH:mm' }}</td>
                 <td>
                   @if (a.traitee) {

@@ -5,12 +5,12 @@ import time
 from fastapi import HTTPException
 
 from app.config import MODULES_ACTIFS
-from app.modeles import (anomalie_connexion, matching, moderation, recommandation, risque, sentiment,
+from app.modeles import (anomalie_connexion, chatbot, matching, moderation, recommandation, risque, sentiment,
                          visage)
 
 log = logging.getLogger("nafsiti.ia")
 
-# L'ordre compte : la modération (5) s'appuie sur le moteur de risque (6).
+# L'ordre compte : la modération (5) et le chatbot s'appuient sur le moteur de risque (6).
 CHARGEURS = {
     "connexion": anomalie_connexion.charger,
     "risque": risque.charger,
@@ -19,6 +19,7 @@ CHARGEURS = {
     "sentiment": sentiment.charger,
     "moderation": moderation.charger,
     "visage": visage.charger,
+    "chatbot": chatbot.charger,
 }
 
 etat: dict[str, str] = {}
@@ -29,7 +30,7 @@ def charger_tout():
         if nom not in MODULES_ACTIFS:
             etat[nom] = "desactive"
             continue
-        if nom == "moderation" and etat.get("risque") != "pret":
+        if nom in ("moderation", "chatbot") and etat.get("risque") != "pret":
             etat[nom] = "erreur : le module risque est requis"
             continue
         debut = time.perf_counter()

@@ -2050,3 +2050,212 @@ fieldset.nf-field {
   color: $nafsiti-green;
   font-size: 13px;
 }
+
+// ---------- Avis (étoiles) ----------
+.nf-etoiles {
+  display: inline-flex;
+  gap: 2px;
+  color: $nafsiti-mist;
+
+  .is-pleine {
+    color: #e0a526;
+  }
+
+  &--choix {
+    font-size: 28px;
+    gap: 6px;
+
+    button {
+      border: 0;
+      background: transparent;
+      padding: 2px;
+      color: $nafsiti-mist;
+      transition: transform 0.1s;
+
+      &:hover,
+      &:focus-visible {
+        transform: scale(1.15);
+      }
+    }
+  }
+}
+
+.nf-etoile-moyenne {
+  color: #e0a526;
+}
+
+// ---------- Cloche de notifications ----------
+.nf-cloche {
+  position: relative;
+
+  &__badge {
+    position: absolute;
+    top: 12px;
+    right: -6px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 9px;
+    background: $nf-danger;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 18px;
+    text-align: center;
+  }
+}
+
+.nf-rappels .noti-body {
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+.nf-rappel {
+  padding: 4px 6px !important;
+
+  a {
+    padding: 10px 12px;
+    border-radius: 10px;
+    white-space: normal;
+  }
+
+  &__icone {
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(69, 115, 93, 0.12);
+    color: $nafsiti-green;
+  }
+
+  &--attention &__icone {
+    background: $nf-danger-bg;
+    color: $nf-danger;
+  }
+
+  &--bravo &__icone {
+    background: #fbf3e4;
+    color: #b07d18;
+  }
+}
+
+// ---------- Assistant (chatbot d'orientation) ----------
+.nf-assistant__bouton {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 1030;
+  width: 56px;
+  height: 56px;
+  border: 0;
+  border-radius: 50%;
+  background: $nafsiti-green;
+  color: #fff;
+  font-size: 22px;
+  box-shadow: 0 6px 18px rgba(31, 45, 39, 0.25);
+  transition: transform 0.15s;
+
+  &:hover {
+    transform: scale(1.06);
+  }
+}
+
+.nf-assistant {
+  position: fixed;
+  right: 24px;
+  bottom: 92px;
+  z-index: 1030;
+  width: min(380px, calc(100vw - 32px));
+  height: min(560px, calc(100vh - 120px));
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 12px 40px rgba(31, 45, 39, 0.25);
+  overflow: hidden;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: $nafsiti-green;
+    color: #fff;
+    font-weight: 600;
+  }
+
+  &__fil {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: $nafsiti-light;
+
+    .nf-bulle {
+      max-width: 88%;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  &__action {
+    padding: 4px 10px;
+    border-radius: 14px;
+    background: rgba(69, 115, 93, 0.1);
+    color: $nafsiti-green;
+    font-size: 12.5px;
+    font-weight: 500;
+    text-decoration: none;
+
+    &:hover {
+      background: rgba(69, 115, 93, 0.2);
+    }
+
+    &--urgence {
+      background: $nf-danger-bg;
+      color: $nf-danger;
+    }
+  }
+
+  &__saisie {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+    border-top: 1px solid $nf-border;
+  }
+
+  &__mention {
+    margin: 0;
+    padding: 0 12px 10px;
+    font-size: 11px;
+    color: $nafsiti-sage;
+    text-align: center;
+  }
+}
+
+.nf-bulle--urgence {
+  border-color: #efc9c9;
+  background: $nf-danger-bg;
+}
+
+@media (max-width: 575.98px) {
+  .nf-assistant {
+    right: 16px;
+    bottom: 84px;
+  }
+
+  .nf-assistant__bouton {
+    right: 16px;
+    bottom: 16px;
+  }
+}

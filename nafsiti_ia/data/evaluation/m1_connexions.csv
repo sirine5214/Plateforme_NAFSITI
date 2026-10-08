@@ -1,0 +1,17 @@
+description,heure_connexion,nouvel_appareil,pays_different,echecs_24h,distance_km_derniere_ip,attendu
+Après-midi depuis son appareil habituel,15,0,0,0,2,AUTORISER
+Matinée habituelle,9,0,0,0,5,AUTORISER
+Soirée habituelle après une faute de frappe,21,0,0,1,3,AUTORISER
+Pause déjeuner au bureau,13,0,0,0,12,AUTORISER
+Soirée tardive habituelle,23,0,0,0,0,AUTORISER
+Deux fautes de frappe en journée,17,0,0,2,1,AUTORISER
+Nouveau téléphone en journée,15,1,0,0,3,MFA_RENFORCEE
+Nouvel ordinateur le soir,20,1,0,1,10,MFA_RENFORCEE
+Voyage à l'étranger,14,0,1,0,800,MFA_RENFORCEE
+Dix échecs de mot de passe,11,0,0,10,0,MFA_RENFORCEE
+Nuit + nouvel appareil + 4 échecs,3,1,0,4,0,MFA_RENFORCEE
+Nouvel appareil dans une autre ville,16,1,0,0,400,MFA_RENFORCEE
+Nuit + nouveau pays + 9 échecs + 2500 km,3,1,1,9,2500,BLOQUER_ET_ALERTER
+Nouveau pays + nouvel appareil + 6 échecs,4,1,1,6,1800,BLOQUER_ET_ALERTER
+Attaque par force brute depuis l'étranger,2,1,1,15,3000,BLOQUER_ET_ALERTER
+Nouvel appareil + 12 échecs + 5000 km,5,1,1,12,5000,BLOQUER_ET_ALERTER

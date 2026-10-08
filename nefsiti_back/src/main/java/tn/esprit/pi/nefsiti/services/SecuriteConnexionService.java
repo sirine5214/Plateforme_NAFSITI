@@ -43,6 +43,7 @@ public class SecuriteConnexionService {
     private final TentativeConnexionRepository tentativeRepository;
     private final UtilisateurRepository utilisateurRepository;
     private final IaClient iaClient;
+    private final EmailService emailService;
 
     @Value("${app.securite.blocage-minutes}")
     private long blocageMinutes;
@@ -111,9 +112,10 @@ public class SecuriteConnexionService {
                 .build());
 
         if (decision.bloquer()) {
-            // TODO brancher l'envoi d'un e-mail d'alerte quand un serveur SMTP sera configuré
             log.warn("ALERTE SÉCURITÉ : connexion bloquée pour l'utilisateur {} (score {}, ip {})",
                     utilisateurId, decision.score(), ctx.ip());
+            utilisateurRepository.findById(utilisateurId)
+                    .ifPresent(u -> emailService.connexionBloquee(u.getEmail(), u.getPrenom(), ctx.ip()));
         }
         return decision;
     }

@@ -88,6 +88,9 @@
                   @if (t.specialites) {
                     <span class="nf-pick__meta">{{ t.specialites }}</span>
                   }
+                  @if (t.noteMoyenne != null) {
+                    <span class="nf-pick__meta"><i class="feather icon-star nf-etoile-moyenne"></i> {{ t.noteMoyenne }}/5 ({{ t.nombreAvis }} avis)</span>
+                  }
                   <span class="nf-pick__meta">
                     {{ t.creneauxLibres === 0 ? 'Aucun créneau libre' : t.creneauxLibres + ' créneau' + (t.creneauxLibres > 1 ? 'x' : '') + ' libre' + (t.creneauxLibres > 1 ? 's' : '') }}
                   </span>

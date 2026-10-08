@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import tn.esprit.pi.nefsiti.dto.AvisRequest;
 import tn.esprit.pi.nefsiti.dto.RendezVousRequest;
 import tn.esprit.pi.nefsiti.dto.RendezVousResponse;
 import tn.esprit.pi.nefsiti.security.UtilisateurPrincipal;
@@ -35,6 +36,12 @@ public class RendezVousController {
     @PatchMapping("/{id}/confirmer")
     public RendezVousResponse confirmer(@AuthenticationPrincipal UtilisateurPrincipal user, @PathVariable Long id) {
         return service.confirmer(user.id(), id);
+    }
+
+    @PostMapping("/{id}/avis")
+    public RendezVousResponse noter(@AuthenticationPrincipal UtilisateurPrincipal user, @PathVariable Long id,
+                                    @Valid @RequestBody AvisRequest req) {
+        return service.noter(user.id(), id, req);
     }
 
     @PatchMapping("/{id}/annuler")

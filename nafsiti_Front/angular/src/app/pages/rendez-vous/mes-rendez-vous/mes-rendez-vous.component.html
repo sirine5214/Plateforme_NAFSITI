@@ -157,6 +157,18 @@
                   <span class="nf-statut nf-statut--{{ r.statut | lowercase }}">{{ statutLabels[r.statut] }}</span>
                 </td>
                 <td class="text-end text-nowrap">
+                  @if (r.noteAvis) {
+                    <span class="nf-etoiles me-2" [title]="'Avis : ' + r.noteAvis + '/5'" [attr.aria-label]="'Avis : ' + r.noteAvis + ' sur 5'">
+                      @for (e of etoiles; track e) {
+                        <i class="feather icon-star" [class.is-pleine]="e <= r.noteAvis"></i>
+                      }
+                    </span>
+                  }
+                  @if (peutNoter(r)) {
+                    <button type="button" class="btn btn-sm btn-light me-1" [disabled]="enCours() === r.id" (click)="ouvrirAvis(r, avis)">
+                      <i class="feather icon-star me-1"></i>Donner mon avis
+                    </button>
+                  }
                   @if (peutConfirmer(r)) {
                     <button type="button" class="btn btn-sm btn-primary me-1" [disabled]="enCours() === r.id" (click)="confirmer(r)">
                       <i class="feather icon-check me-1"></i>Confirmer
@@ -168,6 +180,28 @@
                       <i class="feather icon-x-circle"></i>
                     </button>
                   }
+
+                  <ng-template #avis let-modal>
+                    <div class="modal-body text-center nf-confirm">
+                      <span class="nf-confirm__icon"><i class="feather icon-star"></i></span>
+                      <h5>Comment s'est passée votre séance ?</h5>
+                      <p class="text-muted">avec {{ r.therapeute.prenom }} {{ r.therapeute.nom }}, le {{ r.dateHeure | date: 'd MMMM' }}</p>
+                      <div class="nf-etoiles nf-etoiles--choix mb-3" role="radiogroup" aria-label="Note sur 5">
+                        @for (e of etoiles; track e) {
+                          <button type="button" role="radio" [attr.aria-checked]="noteChoisie() === e" [attr.aria-label]="e + ' sur 5'"
+                            (click)="noteChoisie.set(e)">
+                            <i class="feather icon-star" [class.is-pleine]="e <= noteChoisie()"></i>
+                          </button>
+                        }
+                      </div>
+                      <textarea class="form-control mb-3" rows="3" maxlength="1000" [(ngModel)]="commentaireAvis"
+                        placeholder="Un commentaire ? (facultatif)" aria-label="Commentaire"></textarea>
+                      <div class="d-flex justify-content-center gap-2">
+                        <button type="button" class="btn btn-light" (click)="modal.dismiss()">Plus tard</button>
+                        <button type="button" class="btn btn-primary" [disabled]="noteChoisie() === 0" (click)="modal.close()">Envoyer</button>
+                      </div>
+                    </div>
+                  </ng-template>
 
                   <ng-template #confirmation let-modal>
                     <div class="modal-body text-center nf-confirm">

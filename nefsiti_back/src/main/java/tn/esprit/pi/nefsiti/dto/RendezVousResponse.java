@@ -13,10 +13,13 @@ public record RendezVousResponse(
         String motif,
         PersonneResume patient,
         PersonneResume therapeute,
-        LocalDateTime dateCreation
+        LocalDateTime dateCreation,
+        Integer noteAvis,
+        String commentaireAvis
 ) {
     public static RendezVousResponse from(RendezVous r) {
         return new RendezVousResponse(r.getId(), r.getDateHeure(), r.getDateFin(), r.getStatut(), r.getMotif(),
-                PersonneResume.from(r.getPatient()), PersonneResume.from(r.getTherapeute()), r.getDateCreation());
+                PersonneResume.from(r.getPatient()), PersonneResume.from(r.getTherapeute()), r.getDateCreation(),
+                r.getNoteAvis(), r.getCommentaireAvis());
     }
 }

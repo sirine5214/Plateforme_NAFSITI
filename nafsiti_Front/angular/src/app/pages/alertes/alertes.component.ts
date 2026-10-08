@@ -3,7 +3,7 @@ import { DatePipe, PercentPipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 
-import { Alerte, NIVEAU_RISQUE_LABELS } from 'src/app/core/models/alerte.model';
+import { Alerte, NIVEAU_RISQUE_LABELS, SOURCE_ALERTE_LABELS } from 'src/app/core/models/alerte.model';
 import { initiales } from 'src/app/core/models/utilisateur.model';
 import { AlerteService } from 'src/app/core/services/alerte.service';
 import { AuthService } from 'src/app/core/services/auth.service';
@@ -24,6 +24,7 @@ export class AlertesComponent implements OnInit {
 
   readonly initiales = initiales;
   readonly niveaux = NIVEAU_RISQUE_LABELS;
+  readonly sources = SOURCE_ALERTE_LABELS;
   readonly estTherapeute = computed(() => this.auth.utilisateur()?.role === 'THERAPEUTE');
 
   readonly alertes = signal<Alerte[]>([]);
